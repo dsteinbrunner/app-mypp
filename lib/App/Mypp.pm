@@ -116,10 +116,140 @@ C<mypp> will automatically add the date before creating a dist.
 
 use strict;
 use warnings;
+use Cwd;
+use File::Basename;
+use File::Find;
+use YAML::Tiny;
+
+sub _from_config ($&) {
+    my($name, $sub) = @_;
+
+    no strict 'refs';
+
+    *$name = sub {
+        my $self = shift;
+        return $self->{$name} ||= $self->config->{$name} || $self->$sub(@_);
+    };
+}
+
+sub _attr ($&) {
+    my($name, $sub) = @_;
+
+    no strict 'refs';
+
+    *$name = sub {
+        my $self = shift;
+        return $self->{$name} ||= $self->$sub(@_);
+    };
+}
 
 =head1 ATTRIBUTES
 
+=head2 config
+
+ $hash = $self->config;
+
+Holds the config from C<mypp.yml> or C<MYPP_CONFIG> environment variable.
+
+=cut
+
+_attr config => sub {
+    my $self = shift;
+    my $config = YAML::Tiny->read( $ENV{'MYPP_CONFIG'} || 'mypp.yml' );
+
+    return $config->[0] if($config and $config->[0]);
+    return {};
+};
+
+=head2 name
+
+Holds the project name. The project name is extracted from the
+L</top_module>, unless set in config file. Example: C<foo-bar>.
+
+=cut
+
+_from_config name => sub {
+    my $self = shift;
+    my $name;
+
+    $name = join '-', split '/', $self->top_module;
+    $name =~ s,^.?lib-,,;
+    $name =~ s,\.pm$,,;
+
+    return $name;
+};
+
+=head2 top_module
+
+Holds the top module location. This path is extracted from either
+C<name> in config file or the basename of the project. Example value:
+C<lib/Foo/Bar.pm>.
+
+The project might look like this:
+
+ ./foo-bar/lib/Foo/Bar.pm
+
+Where "foo-bar" is the basename.
+
+=cut
+
+_from_config top_module => sub {
+    my $self = shift;
+    my $name = $self->config->{'name'} || basename getcwd;
+    my @path = split /-/, $name;
+    my $path = 'lib';
+    my $file;
+
+    $path[-1] .= '.pm';
+
+    for my $p (@path) {
+        opendir my $DH, $path or die "Cannot find top module from project name '$name': $!\n";
+        for my $f (readdir $DH) {
+            if(lc $f eq lc $p) {
+                $path = "$path/$f";
+                last;
+            }
+        }
+    }
+    
+    unless(-f $path) {
+        die "Cannot find top module from project name '$name': $path is not a plain file\n";
+    }
+
+    return $path;
+};
+
+=head2 top_module_name
+
+Returns the top module name, extracted from L</top_module>. Example value:
+C<Foo::Bar>.
+
+=cut
+
+_from_config top_module_name => sub {
+    my $self = shift;
+    return $self->_filename_to_module($self->top_module);
+};
+
 =head1 METHODS
+
+=head2 new
+
+ $self = App::Mypp->new;
+
+=cut
+
+sub new {
+    return bless {}, __PACKAGE__;
+}
+
+sub _filename_to_module {
+    local $_ = $_[1];
+    s,\.pm,,;
+    s,^/?lib/,,g;
+    s,/,::,g;
+    return $_;
+}
 
 =head1 SEE ALSO
 
