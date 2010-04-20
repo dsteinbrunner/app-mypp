@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use lib q(lib);
 use Data::Dumper;
 
 eval "use App::Mypp; 1" or die "Could not load App::Mypp: $@";

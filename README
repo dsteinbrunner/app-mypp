@@ -203,6 +203,9 @@ METHODS
   t_load
     Will create "t/00-load.t".
 
+  help
+    Will display "SYNOPSIS".
+
 SEE ALSO
     App::Cpanminus, Dist::Zilla, <http://jhthorsen.github.com/app-mypp>.
 
