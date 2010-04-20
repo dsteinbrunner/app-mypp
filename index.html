@@ -125,7 +125,7 @@ anything, so 1) it just works 2) it might not work as you want it to.</p>
 <p>All config params are optional, since mypp will probably figure out the
 information for you.</p>
 <h2><a name="sharing_the_module">SHARING THE MODULE</a></h1>
-<p>By default the <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
+<p>By default the <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
 This module will use the information from <code>$HOME/.pause</code> to find login
 information:</p>
 <pre>
@@ -182,7 +182,7 @@ origin is done on <code>-share</code>.</p>
 <h3><a name="dist_file">dist_file</a></h2>
 <p>Returns the name of the target dist file.</p>
 <h3><a name="pause_info">pause_info</a></h2>
-<p>Holds information from <code>$HOME/.pause</code>. See <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a> for details.
+<p>Holds information from <code>$HOME/.pause</code>. See <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> for details.
 Example:</p>
 <pre>
  {
@@ -192,7 +192,7 @@ Example:</p>
 <h3><a name="share_extension">share_extension</a></h2>
 <p>Holds the classname of the module which should be used for sharing. This
 value can either come from config file, <code>MYPP_SHARE_MODULE</code> environment
-variable or fallback to <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a>.</p>
+variable or fallback to <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a>.</p>
 <h3><a name="share_params">share_params</a></h2>
 <p>This attribute must hold an array-ref, since it is deflated as a list when
 used as arguments to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
@@ -200,6 +200,7 @@ used as arguments to <a href="#share_extension">share_extension</a>'s <code>uplo
 <h3><a name="new">new</a></h2>
 <pre>
  $self = App::Mypp-&gt;new;</pre>
+<p>Will create a new object</p>
 <h3><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
 <p>Will insert a timestamp in Changes on the first line looking like this:</p>
 <pre>
@@ -230,10 +231,10 @@ pushed to the currently active branch.</p>
 <h3><a name="t_load">t_load</a></h2>
 <p>Will create <code>t/00-load.t</code>.</p>
 <h3><a name="help">help</a></h2>
-<p>Will display <a href="#synopsis">SYNOPSIS</a>.</p>
+<p>Will display <a href="#synopsis">SYNOPSIS</a> to STDOUT.</p>
 <h2><a name="see_also">SEE ALSO</a></h1>
-<p><a href="/App/Cpanminus.html">the App::Cpanminus manpage</a>,
-<a href="/Dist/Zilla.html">the Dist::Zilla manpage</a>,
+<p><a href="http://search.cpan.org/dist/App-Cpanminus">the App::Cpanminus manpage</a>,
+<a href="http://search.cpan.org/dist/Dist-Zilla">the Dist::Zilla manpage</a>,
 <a href="http://jhthorsen.github.com/app-mypp">http://jhthorsen.github.com/app-mypp</a>.</p>
 <h2><a name="bugs">BUGS</a></h1>
 <p>Report bugs and issues at <a href="http://github.com/jhthorsen/app-mypp/issues">http://github.com/jhthorsen/app-mypp/issues</a>.</p>
