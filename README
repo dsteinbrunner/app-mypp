@@ -137,7 +137,7 @@ ATTRIBUTES
      }
 
   dist_file
-    Returns the name of the dist file, if it has been built/exists.
+    Returns the name of the target dist file.
 
   pause_info
     Holds information from "$HOME/.pause". See CPAN::Uploader for details.

@@ -6,11 +6,12 @@ use App::Mypp;
 
 plan tests =>
       1
-    + 8 # attributes
+    + 9 # attributes
     + 5 # various
     + 6 # makefile
     + 3 # manifest
     + 4 # methods
+    + 3 # pause_info
 ;
 
 -d '.git' or BAIL_OUT 'cannot run test without .git repo';
@@ -32,7 +33,10 @@ eval { # attributes
     is(ref $app->changes, 'HASH', 'attr changes is a hash ref');
     like($app->changes->{'text'}, qr{^0\.01.*Init repo}s, 'changes->text is set');
     is($app->changes->{'version'}, '0.01', 'changes->version is set');
-} or BAIL_OUT "something bad happened: $@";
+    is($app->dist_file, 'App-Mypp-0.01.tar.gz', 'dist_file is set');
+
+    1;
+} or diag $@;
 
 eval { # various
     ok($app->timestamp_to_changes, 'timestamp_to_changes() succeeded');
@@ -85,12 +89,22 @@ eval {
     1;
 } or diag $@;
 
+eval {
+    is(ref $app->pause_info, 'HASH', 'pause_info is a hashref');
+    is($app->pause_info->{'user'}, 'john', 'pause_info->username is set');
+    is($app->pause_info->{'password'}, 's3cret', 'pause_info->password is set');
+
+    1;
+} or diag $@;
+
 #==============================================================================
 sub init {
     $App::Mypp::SILENT = 1;
     $App::Mypp::CHANGES_FILENAME = 't/Changes.test';
+    $App::Mypp::PAUSE_FILENAME = 't/pause.test';
 
     open my $CHANGES, '>', $App::Mypp::CHANGES_FILENAME or BAIL_OUT 'cannot write to t/Changes.test';
+    open my $PAUSE, '>', $App::Mypp::PAUSE_FILENAME or BAIL_OUT 'cannot write to t/pause.test';
 
     print $CHANGES <<'CHANGES';
 Revision history for App-Mypp
@@ -99,10 +113,16 @@ Revision history for App-Mypp
  * Init repo
 
 CHANGES
+
+    print $PAUSE <<'PAUSE';
+user john
+password s3cret
+PAUSE
 }
 
 END {
     unlink 't/Changes.test';
     unlink 't/Makefile.test';
+    unlink 't/pause.test';
     system rm => -rf => 't/inc';
 }

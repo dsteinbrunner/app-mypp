@@ -125,6 +125,7 @@ our $VERSION = '0.01';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
+our $PAUSE_FILENAME = $ENV{'HOME'} .'/.pause';
 our $VERSION_RE = qr/\d+ \. [\d_]+/x;
 
 sub _from_config ($&) {
@@ -277,6 +278,47 @@ _attr changes => sub {
         text => $text,
         version => $version,
     };
+};
+
+=head2 dist_file
+
+Returns the name of the target dist file.
+
+=cut
+
+_attr dist_file => sub {
+    my $self = shift;
+    return sprintf '%s-%s.tar.gz', $self->name, $self->changes->{'version'};
+};
+
+=head2 pause_info
+
+Holds information from C<$HOME/.pause>. See L<CPAN::Uploader> for details.
+Example:
+
+ {
+   user => 'johndoe',
+   password => 's3cret',
+ }
+
+=cut
+
+_attr pause_info => sub {
+    my $self = shift;
+    my $info;
+
+    open my $PAUSE, '<', $PAUSE_FILENAME or die "Read $PAUSE_FILENAME: $!\n";
+
+    while(<$PAUSE>) {
+        my($k, $v) = split /\s+/, $_, 2;
+        chomp $v;
+        $info->{$k} = $v;
+    }
+
+    die "'user <name>' is not set in $PAUSE_FILENAME\n" unless $info->{'user'};
+    die "'password <mysecret>' is not set in $PAUSE_FILENAME\n" unless $info->{'password'};
+
+    return $info;
 };
 
 =head1 METHODS
