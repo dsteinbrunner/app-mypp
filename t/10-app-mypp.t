@@ -10,6 +10,8 @@ plan tests =>
     + 4 # methods
 ;
 
+-d '.git' or BAIL_OUT 'cannot run test without .git repo';
+
 init();
 my $app;
 
@@ -39,6 +41,29 @@ eval { # methods
         ok($app->clean, 'clean() succeeded');
     };
 
+    {
+        local $App::Mypp::MAKEFILE_FILENAME = 't/Makefile.test';
+        ok($app->makefile, 'makefile() succeeded');
+        ok(-e $App::Mypp::MAKEFILE_FILENAME, 'Makefile.PL created');
+        open my $MAKEFILE, '<', $App::Mypp::MAKEFILE_FILENAME or die $!;
+        my $makefile = do { local $/; <$MAKEFILE> };
+        my $name = $app->name;
+        my $top_module = $app->top_module;
+        like($makefile, qr{name q\($name\)}, 'name is part of Makefile.PL');
+        like($makefile, qr{all_from q\($top_module\)}, 'all_from is part of Makefile.PL');
+        like($makefile, qr{bugtracker q\(http://rt.cpan.org/NoAuth/Bugs.html\?Dist=$name\);}, 'bugtracker is part of Makefile.PL');
+        like($makefile, qr{homepage q\(http://search.cpan.org/dist/$name\);}, 'homepage is part of Makefile.PL');
+       #like($makefile, qr{repository q\(git://github.com/\);}, 'repository is part of Makefile.PL');
+    }
+
+    TODO: {
+        todo_skip 'difficult to make stable', 3;
+        unlink 'MANIFEST', 'MANIFEST.SKIP';
+        ok($app->manifest, 'manifest() succeeded');
+        ok(-e 'MANIFEST', 'MANIFEST exists');
+        ok(-e 'MANIFEST.SKIP', 'MANIFEST.SKIP exists');
+    }
+
     1;
 } or BAIL_OUT "something bad happened: $@";
 
@@ -59,5 +84,7 @@ CHANGES
 }
 
 END {
-    unlink $App::Mypp::CHANGES_FILENAME or diag "could not unlink t/Changes.test";
+    unlink 't/Changes.test';
+    unlink 't/Makefile.test';
+    system rm => -rf => 't/inc';
 }

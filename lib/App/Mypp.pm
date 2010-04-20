@@ -123,6 +123,7 @@ use YAML::Tiny;
 
 our $VERSION = '0.01';
 our $SILENT = $ENV{'SILENT'} || 0;
+our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
 our $VERSION_RE = qr/\d+ \. [\d_]+/x;
 
@@ -366,8 +367,8 @@ Will remove all files which should not be part of your repo.
 sub clean {
     my $self = shift;
     my $name = $self->name;
-    $self->vsystem('make clean 2>/dev/null');
-    $self->vsystem(sprintf 'rm -r %s 2>/dev/null', join(' ',
+    $self->_vsystem('make clean 2>/dev/null');
+    $self->_vsystem(sprintf 'rm -r %s 2>/dev/null', join(' ',
         "$name*",
         qw(
             blib/
@@ -380,6 +381,82 @@ sub clean {
     ));
 
     return 1;
+}
+
+=head2 makefile
+
+Will create a Makefile.PL, unless it already exists.
+
+=cut
+
+sub makefile {
+    my $self = shift;
+    my $name = $self->name;
+    my(%requires, $repo);
+
+    die "$MAKEFILE_FILENAME already exist\n" if(-e $MAKEFILE_FILENAME);
+
+    open my $MAKEFILE, '>', $MAKEFILE_FILENAME or die "Write '$MAKEFILE_FILENAME': $!\n";
+
+    printf $MAKEFILE "use inc::Module::Install;\n\n";
+    printf $MAKEFILE "name q(%s);\n", $self->name;
+    printf $MAKEFILE "all_from q(%s);\n", $self->top_module;
+
+    $repo = (qx/git remote show -n origin/ =~ /URL: (.*)$/m)[0] || 'git://github.com/';
+    $repo =~ s#^[^:]+:#git://github.com/#;
+
+    print $MAKEFILE "\n";
+    print $MAKEFILE "bugtracker q(http://rt.cpan.org/NoAuth/Bugs.html?Dist=$name);\n";
+    print $MAKEFILE "homepage q(http://search.cpan.org/dist/$name);\n";
+    print $MAKEFILE "repository q($repo);\n";
+    print $MAKEFILE "\n";
+    print $MAKEFILE "auto_install;\n";
+    print $MAKEFILE "WriteAll;\n";
+
+    print "Wrote $MAKEFILE_FILENAME\n" unless $SILENT;
+
+    return 1;
+}
+
+=head2 manifest
+
+Will create MANIFEST and MANIFEST.SKIP.
+
+=cut
+
+sub manifest {
+    my $self = shift;
+
+    $self->make('manifest') and die "Execute 'make manifest' failed\n";
+
+    open my $SKIP, '>', 'MANIFEST.SKIP' or die "Write 'MANIFEST.SKIP': $!\n";
+
+    print $SKIP "$_\n" for qw(
+                           ^dperl.yml
+                           .git
+                           \.old
+                           \.swp
+                           ~$
+                           ^blib/
+                           ^Makefile$
+                           ^MANIFEST.*
+                       ), $self->name;
+
+    return 1;
+}
+
+=head2 make($what);
+
+Will create C<Makefile.PL>, unless already exists, then run perl on the
+make script, and then execute C<make $what>.
+
+=cut
+
+sub make {
+    my $self = shift;
+    $self->makefile unless(-e $MAKEFILE_FILENAME);
+    $self->_vsystem(perl => $MAKEFILE_FILENAME) unless(-e 'Makefile');
+    $self->_vsystem(make => @_);
 }
 
 sub _vsystem {
