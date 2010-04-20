@@ -707,7 +707,7 @@ L<http://jhthorsen.github.com/app-mypp>.
 
 =head1 BUGS
 
-Report bugs and issues at L<http://github.com/jhthorsen/snippets/issues>.
+Report bugs and issues at L<http://github.com/jhthorsen/app-myapp/issues>.
 
 =head1 COPYRIGHT & LICENSE
 
