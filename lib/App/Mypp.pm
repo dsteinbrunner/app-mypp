@@ -682,7 +682,7 @@ sub help {
         }
     }
 
-    return;
+    return 2;
 }
 
 sub _vsystem {
