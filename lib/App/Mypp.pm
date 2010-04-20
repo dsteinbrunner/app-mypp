@@ -501,6 +501,36 @@ sub make {
     $self->_vsystem(make => @_);
 }
 
+=head2 tag_and_commit
+
+Will commit with the text from Changes and create a tag
+
+=cut
+
+sub tag_and_commit {
+    $self->vsystem(git => commit => -a => -m => $self->changes->{'latest'});
+    $self->vsystem(git => tag => $self->changes->{'version'});
+    return 1;
+}
+
+=head2 share_via_git
+
+Will use git and push changes and tags to "origin". The changes will be
+pushed to the currently active branch.
+
+=cut
+
+sub share_via_git {
+    my $branch = (qx/git branch/ =~ /\* (.*)$/m)[0];
+
+    chomp $branch;
+
+    $self->vsystem(git => push => origin => $branch);
+    $self->vsystem(git => push => '--tags' => 'origin');
+
+    return 1;
+}
+
 =head2 t_pod
 
 Will create C<t/99-pod-coverage.t> and C<t/99-pod.t>.
