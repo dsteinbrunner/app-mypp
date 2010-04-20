@@ -357,6 +357,31 @@ sub generate_readme {
     ) ? 0 : 1;
 }
 
+=head2 clean
+
+Will remove all files which should not be part of your repo.
+
+=cut
+
+sub clean {
+    my $self = shift;
+    my $name = $self->name;
+    $self->vsystem('make clean 2>/dev/null');
+    $self->vsystem(sprintf 'rm -r %s 2>/dev/null', join(' ',
+        "$name*",
+        qw(
+            blib/
+            inc/
+            Makefile
+            Makefile.old
+            MANIFEST*
+            META.yml
+        ),
+    ));
+
+    return 1;
+}
+
 sub _vsystem {
     shift; # shift off class/object
     print "\$ @_\n" unless $SILENT;

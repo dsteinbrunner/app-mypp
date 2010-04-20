@@ -7,7 +7,7 @@ use App::Mypp;
 plan tests =>
       1 # various
     + 8 # attributes
-    + 3 # methods
+    + 4 # methods
 ;
 
 init();
@@ -33,6 +33,13 @@ eval { # methods
     ok($app->timestamp_to_changes, 'timestamp_to_changes() succeeded');
     ok($app->update_version_info, 'update_version_info() succeeded');
     ok($app->generate_readme, 'generate_readme() succeeded');
+
+    TODO: {
+        todo_skip 'will this disrupt test? possible race condition', 1;
+        ok($app->clean, 'clean() succeeded');
+    };
+
+    1;
 } or BAIL_OUT "something bad happened: $@";
 
 #==============================================================================
