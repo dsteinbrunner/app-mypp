@@ -121,6 +121,10 @@ use File::Basename;
 use File::Find;
 use YAML::Tiny;
 
+our $SILENT = $ENV{'SILENT'} || 0;
+our $CHANGES_FILENAME = 'Changes';
+our $VERSION_RE = qr/\d+ \. [\d_]+/x;
+
 sub _from_config ($&) {
     my($name, $sub) = @_;
 
@@ -231,6 +235,48 @@ _from_config top_module_name => sub {
     return $self->_filename_to_module($self->top_module);
 };
 
+=head2 changes
+
+Holds the latest information from C<Changes>. Example:
+
+ {
+   text => qq(0.03 .... \n * Something has changed),
+   version => 0.03,
+ }
+
+=cut
+
+_attr changes => sub {
+    my $self = shift;
+    my($text, $version);
+
+    open my $CHANGES, '<', $CHANGES_FILENAME or die "Read '$CHANGES_FILENAME': $!\n";
+
+    while(<$CHANGES>) {
+        if($text) {
+            if(/^$/) {
+                last;
+            }
+            else {
+                $text .= $_;
+            }
+        }
+        elsif(/^($VERSION_RE)/) {
+            $version = $1;
+            $text = $_;
+        }
+    }
+
+    unless($text and $version) {
+        die "Could not find commit message nor version info from $CHANGES_FILENAME\n";
+    }
+
+    return {
+        text => $text,
+        version => $version,
+    };
+};
+
 =head1 METHODS
 
 =head2 new
@@ -241,6 +287,59 @@ _from_config top_module_name => sub {
 
 sub new {
     return bless {}, __PACKAGE__;
+}
+
+=head2 timestamp_to_changes
+
+Will insert a timestamp in Changes on the first line looking like this:
+
+ ^\d+\.[\d_]+\s*$
+
+=cut
+
+sub timestamp_to_changes {
+    my $self = shift;
+    my $date = qx/date/; # ?!?
+    my($changes, $pm);
+
+    chomp $date;
+
+    open my $CHANGES, '+<', $CHANGES_FILENAME or die "Read/write '$CHANGES_FILENAME': $!\n";
+    { local $/; $changes = <$CHANGES> };
+
+    if($changes =~ s/\n($VERSION_RE)\s*$/{ sprintf "\n%-7s  %s", $1, $date }/em) {
+        seek $CHANGES, 0, 0;
+        print $CHANGES $changes;
+        print "Add timestamp '$date' to $CHANGES_FILENAME\n" unless $SILENT;
+        return 1;
+    }
+
+    die "Unable to update $CHANGES_FILENAME with timestamp\n";
+}
+
+=head2 update_version_info
+
+Will update version in top module, with the latest version from C<Changes>.
+
+=cut
+
+sub update_version_info {
+    my $self = shift;
+    my $top_module = $self->top_module;
+    my $version = $self->changes->{'version'};
+    my $top_module_text;
+
+    open my $MODULE, '+<', $top_module or die "Read/write '$top_module': $!\n";
+    { local $/; $top_module_text = <$MODULE> };
+    $top_module_text =~ s/=head1 VERSION.*?\n=/=head1 VERSION\n\n$version\n\n=/s;
+    $top_module_text =~ s/\$VERSION\s*=.*$/\$VERSION = '$version';/m;
+
+    seek $MODULE, 0, 0;
+    print $MODULE $top_module_text;
+
+    print "Update version in '$top_module' to $version\n" unless $SILENT;
+
+    return 1;
 }
 
 sub _filename_to_module {
