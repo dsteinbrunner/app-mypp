@@ -53,70 +53,55 @@ title: App::MyApp
 	<li><a href="#copyright___license">COPYRIGHT &amp; LICENSE</a></li>
 	<li><a href="#author">AUTHOR</a></li>
 </ul>
-
-<hr name="index" />
 </div>
 <!-- INDEX END -->
 
-<p>
-</p>
-<h1><a name="name">NAME</a></h1>
+<h2><a name="name">NAME</a></h1>
 <p>App::Mypp - Maintain Your Perl Project</p>
-<p>
-</p>
-<hr />
-<h1><a name="version">VERSION</a></h1>
+<h2><a name="version">VERSION</a></h1>
 <p>0.01</p>
-<p>
-</p>
-<hr />
-<h1><a name="description">DESCRIPTION</a></h1>
+<h2><a name="description">DESCRIPTION</a></h1>
 <p>mypp is a result of me getting tired of doing the same stuff - or
 rather forgetting to do the same stuff for each of my perl projects.
 mypp does not feature the same things as Dist::Zilla, but I would
 like to think of mypp VS dzil as CPAN  vs cpanm - or at least that
 is what I'm aming for. (!) What I don't want to do, is to configure
 anything, so 1) it just works 2) it might not work as you want it to.</p>
-<p>
-</p>
-<hr />
-<h1><a name="synopsis">SYNOPSIS</a></h1>
+<h2><a name="synopsis">SYNOPSIS</a></h1>
 <pre>
- Usage mypp [option]</pre>
-<pre>
+ Usage mypp [option]
+
  -update
   * Update version information in main module
   * Create/update t/00-load.t and t/99-pod*t
-  * Create/update README</pre>
-<pre>
+  * Create/update README
+
  -build
   * Same as -update
   * Update Changes with release date
   * Create MANIFEST* and META.yml
   * Tag and commit the changes (locally)
-  * Build a distribution (.tar.gz)</pre>
-<pre>
+  * Build a distribution (.tar.gz)
+
  -share
   * Push commit and tag to &quot;origin&quot;
-  * Upload the disted file to CPAN</pre>
-<pre>
+  * Upload the disted file to CPAN
+
  -test
   * Create/update t/00-load.t and t/99-pod*t
-  * Test the project</pre>
-<pre>
+  * Test the project
+
  -clean
   * Remove files and directories which should not be included
-    in the project repo</pre>
-<pre>
+    in the project repo
+
  -makefile
-  * Create a Makefile.PL from plain guesswork</pre>
-<pre>
+  * Create a Makefile.PL from plain guesswork
+
  -man
-  * Display manual for mypp</pre>
-<p>
-</p>
-<hr />
-<h1><a name="sample_config_file">SAMPLE CONFIG FILE</a></h1>
+  * Display manual for mypp
+</pre>
+<h2><a name="sample_config_file">SAMPLE CONFIG FILE</a></h1>
 <pre>
  ---
  # Default to a converted version of top_module
@@ -139,10 +124,7 @@ anything, so 1) it just works 2) it might not work as you want it to.</p>
  share_params: [ { answer: 42 } ]</pre>
 <p>All config params are optional, since mypp will probably figure out the
 information for you.</p>
-<p>
-</p>
-<hr />
-<h1><a name="sharing_the_module">SHARING THE MODULE</a></h1>
+<h2><a name="sharing_the_module">SHARING THE MODULE</a></h1>
 <p>By default the <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
 This module will use the information from <code>$HOME/.pause</code> to find login
 information:</p>
@@ -157,10 +139,7 @@ information:</p>
  git push --tags origin</pre>
 <p>The commit and tag is done when on <code>-dist</code>, while pushing the changes to
 origin is done on <code>-share</code>.</p>
-<p>
-</p>
-<hr />
-<h1><a name="changes">Changes</a></h1>
+<h2><a name="changes">Changes</a></h1>
 <p>The expected format in <code>Changes</code> is:</p>
 <pre>
  Some random header, for Example:
@@ -174,24 +153,15 @@ origin is done on <code>-share</code>.</p>
   * First release
   * Add some feature</pre>
 <p><code>mypp</code> will automatically add the date before creating a dist.</p>
-<p>
-</p>
-<hr />
-<h1><a name="attributes">ATTRIBUTES</a></h1>
-<p>
-</p>
-<h2><a name="config">config</a></h2>
+<h2><a name="attributes">ATTRIBUTES</a></h1>
+<h3><a name="config">config</a></h2>
 <pre>
  $hash = $self-&gt;config;</pre>
 <p>Holds the config from <code>mypp.yml</code> or <code>MYPP_CONFIG</code> environment variable.</p>
-<p>
-</p>
-<h2><a name="name">name</a></h2>
+<h3><a name="name">name</a></h2>
 <p>Holds the project name. The project name is extracted from the
 <a href="#top_module">top_module</a>, unless set in config file. Example: <code>foo-bar</code>.</p>
-<p>
-</p>
-<h2><a name="top_module">top_module</a></h2>
+<h3><a name="top_module">top_module</a></h2>
 <p>Holds the top module location. This path is extracted from either
 <code>name</code> in config file or the basename of the project. Example value:
 <code>lib/Foo/Bar.pm</code>.</p>
@@ -199,27 +169,19 @@ origin is done on <code>-share</code>.</p>
 <pre>
  ./foo-bar/lib/Foo/Bar.pm</pre>
 <p>Where &quot;foo-bar&quot; is the basename.</p>
-<p>
-</p>
-<h2><a name="top_module_name">top_module_name</a></h2>
+<h3><a name="top_module_name">top_module_name</a></h2>
 <p>Returns the top module name, extracted from <a href="#top_module">top_module</a>. Example value:
 <code>Foo::Bar</code>.</p>
-<p>
-</p>
-<h2><a name="changes">changes</a></h2>
+<h3><a name="changes">changes</a></h2>
 <p>Holds the latest information from <code>Changes</code>. Example:</p>
 <pre>
  {
    text =&gt; qq(0.03 .... \n * Something has changed),
    version =&gt; 0.03,
  }</pre>
-<p>
-</p>
-<h2><a name="dist_file">dist_file</a></h2>
+<h3><a name="dist_file">dist_file</a></h2>
 <p>Returns the name of the target dist file.</p>
-<p>
-</p>
-<h2><a name="pause_info">pause_info</a></h2>
+<h3><a name="pause_info">pause_info</a></h2>
 <p>Holds information from <code>$HOME/.pause</code>. See <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a> for details.
 Example:</p>
 <pre>
@@ -227,104 +189,57 @@ Example:</p>
    user =&gt; 'johndoe',
    password =&gt; 's3cret',
  }</pre>
-<p>
-</p>
-<h2><a name="share_extension">share_extension</a></h2>
+<h3><a name="share_extension">share_extension</a></h2>
 <p>Holds the classname of the module which should be used for sharing. This
 value can either come from config file, <code>MYPP_SHARE_MODULE</code> environment
 variable or fallback to <a href="/CPAN/Uploader.html">the CPAN::Uploader manpage</a>.</p>
-<p>
-</p>
-<h2><a name="share_params">share_params</a></h2>
+<h3><a name="share_params">share_params</a></h2>
 <p>This attribute must hold an array-ref, since it is deflated as a list when
 used as arguments to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
-<p>
-</p>
-<hr />
-<h1><a name="methods">METHODS</a></h1>
-<p>
-</p>
-<h2><a name="new">new</a></h2>
+<h2><a name="methods">METHODS</a></h1>
+<h3><a name="new">new</a></h2>
 <pre>
  $self = App::Mypp-&gt;new;</pre>
-<p>
-</p>
-<h2><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
+<h3><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
 <p>Will insert a timestamp in Changes on the first line looking like this:</p>
 <pre>
  ^\d+\.[\d_]+\s*$</pre>
-<p>
-</p>
-<h2><a name="update_version_info">update_version_info</a></h2>
+<h3><a name="update_version_info">update_version_info</a></h2>
 <p>Will update version in top module, with the latest version from <code>Changes</code>.</p>
-<p>
-</p>
-<h2><a name="generate_readme">generate_readme</a></h2>
+<h3><a name="generate_readme">generate_readme</a></h2>
 <p>Will generate a <code>README</code> file from the plain old documentation in top
 module.</p>
-<p>
-</p>
-<h2><a name="clean">clean</a></h2>
+<h3><a name="clean">clean</a></h2>
 <p>Will remove all files which should not be part of your repo.</p>
-<p>
-</p>
-<h2><a name="makefile">makefile</a></h2>
+<h3><a name="makefile">makefile</a></h2>
 <p>Will create a Makefile.PL, unless it already exists.</p>
-<p>
-</p>
-<h2><a name="manifest">manifest</a></h2>
+<h3><a name="manifest">manifest</a></h2>
 <p>Will create MANIFEST and MANIFEST.SKIP.</p>
-<p>
-</p>
-<h2><a name="make__what__"><code>make($what)</code>;</a></h2>
+<h3><a name="make__what__"><code>make($what)</code>;</a></h2>
 <p>Will create <code>Makefile.PL</code>, unless already exists, then run perl on the
 make script, and then execute <code>make $what</code>.</p>
-<p>
-</p>
-<h2><a name="tag_and_commit">tag_and_commit</a></h2>
+<h3><a name="tag_and_commit">tag_and_commit</a></h2>
 <p>Will commit with the text from Changes and create a tag</p>
-<p>
-</p>
-<h2><a name="share_via_git">share_via_git</a></h2>
+<h3><a name="share_via_git">share_via_git</a></h2>
 <p>Will use git and push changes and tags to &quot;origin&quot;. The changes will be
 pushed to the currently active branch.</p>
-<p>
-</p>
-<h2><a name="share_via_extension">share_via_extension</a></h2>
+<h3><a name="share_via_extension">share_via_extension</a></h2>
 <p>Will use <a href="#share_extension">share_extension</a> module and upload the dist file.</p>
-<p>
-</p>
-<h2><a name="t_pod">t_pod</a></h2>
+<h3><a name="t_pod">t_pod</a></h2>
 <p>Will create <code>t/99-pod-coverage.t</code> and <code>t/99-pod.t</code>.</p>
-<p>
-</p>
-<h2><a name="t_load">t_load</a></h2>
+<h3><a name="t_load">t_load</a></h2>
 <p>Will create <code>t/00-load.t</code>.</p>
-<p>
-</p>
-<h2><a name="help">help</a></h2>
+<h3><a name="help">help</a></h2>
 <p>Will display <a href="#synopsis">SYNOPSIS</a>.</p>
-<p>
-</p>
-<hr />
-<h1><a name="see_also">SEE ALSO</a></h1>
+<h2><a name="see_also">SEE ALSO</a></h1>
 <p><a href="/App/Cpanminus.html">the App::Cpanminus manpage</a>,
 <a href="/Dist/Zilla.html">the Dist::Zilla manpage</a>,
 <a href="http://jhthorsen.github.com/app-mypp">http://jhthorsen.github.com/app-mypp</a>.</p>
-<p>
-</p>
-<hr />
-<h1><a name="bugs">BUGS</a></h1>
+<h2><a name="bugs">BUGS</a></h1>
 <p>Report bugs and issues at <a href="http://github.com/jhthorsen/app-mypp/issues">http://github.com/jhthorsen/app-mypp/issues</a>.</p>
-<p>
-</p>
-<hr />
-<h1><a name="copyright___license">COPYRIGHT &amp; LICENSE</a></h1>
+<h2><a name="copyright___license">COPYRIGHT &amp; LICENSE</a></h1>
 <p>Copyright 2007 Jan Henning Thorsen, all rights reserved.</p>
 <p>This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.</p>
-<p>
-</p>
-<hr />
-<h1><a name="author">AUTHOR</a></h1>
+<h2><a name="author">AUTHOR</a></h1>
 <p>Jan Henning Thorsen, <code>jhthorsen at cpan.org</code></p>
