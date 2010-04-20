@@ -66,7 +66,7 @@ anything, so 1) it just works 2) it might not work as you want it to.
  top_module_name: Foo::Bar 
  
  # Default to CPAN::Uploader. Can also be set through
- # DPERL_SHARE_MODULE environment variable.
+ # MYPP_SHARE_MODULE environment variable.
  share_extension: AnyModuleName
  
  # Not in use if share_extension == CPAN::Uploader. Usage:
@@ -321,6 +321,30 @@ _attr pause_info => sub {
     return $info;
 };
 
+=head2 share_extension
+
+Holds the classname of the module which should be used for sharing. This
+value can either come from config file, C<MYPP_SHARE_MODULE> environment
+variable or fallback to L<CPAN::Uploader>.
+
+=cut
+
+# $str = $self->share_extension
+_from_config share_extension => sub {
+    my $self = shift;
+
+    return $ENV{'MYPP_SHARE_MODULE'} if($ENV{'MYPP_SHARE_MODULE'});
+    return $self->config->{'share_extension'} if($self->config->{'share_extension'});
+    return 'CPAN::Uploader';
+};
+
+# $hash = $self->share_params;
+_from_config share_params => sub {
+    my $self = shift;
+    return $self->config->{'share_params'} if($self->config->{'share_params'});
+    return;
+};
+
 =head1 METHODS
 
 =head2 new
@@ -508,8 +532,9 @@ Will commit with the text from Changes and create a tag
 =cut
 
 sub tag_and_commit {
-    $self->vsystem(git => commit => -a => -m => $self->changes->{'latest'});
-    $self->vsystem(git => tag => $self->changes->{'version'});
+    my $self = shift;
+    $self->_vsystem(git => commit => -a => -m => $self->changes->{'latest'});
+    $self->_vsystem(git => tag => $self->changes->{'version'});
     return 1;
 }
 
@@ -521,12 +546,13 @@ pushed to the currently active branch.
 =cut
 
 sub share_via_git {
+    my $self = shift;
     my $branch = (qx/git branch/ =~ /\* (.*)$/m)[0];
 
     chomp $branch;
 
-    $self->vsystem(git => push => origin => $branch);
-    $self->vsystem(git => push => '--tags' => 'origin');
+    $self->_vsystem(git => push => origin => $branch);
+    $self->_vsystem(git => push => '--tags' => 'origin');
 
     return 1;
 }

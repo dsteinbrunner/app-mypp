@@ -6,7 +6,7 @@ use App::Mypp;
 
 plan tests =>
       1
-    + 9 # attributes
+    + 11 # attributes
     + 5 # various
     + 6 # makefile
     + 3 # manifest
@@ -34,6 +34,13 @@ eval { # attributes
     like($app->changes->{'text'}, qr{^0\.01.*Init repo}s, 'changes->text is set');
     is($app->changes->{'version'}, '0.01', 'changes->version is set');
     is($app->dist_file, 'App-Mypp-0.01.tar.gz', 'dist_file is set');
+
+    {
+        is($app->share_extension, 'CPAN::Uploader', 'share_extension has default value');
+        local $ENV{'MYPP_SHARE_MODULE'} = 'Foo::Module';
+        $app->{'share_extension'} = undef;
+        is($app->share_extension, 'Foo::Module', 'share_extension has environment value');
+    }
 
     1;
 } or diag $@;

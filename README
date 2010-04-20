@@ -59,7 +59,7 @@ SAMPLE CONFIG FILE
      top_module_name: Foo::Bar 
  
      # Default to CPAN::Uploader. Can also be set through
-     # DPERL_SHARE_MODULE environment variable.
+     # MYPP_SHARE_MODULE environment variable.
      share_extension: AnyModuleName
  
      # Not in use if share_extension == CPAN::Uploader. Usage:
@@ -148,6 +148,11 @@ ATTRIBUTES
        password => 's3cret',
      }
 
+  share_extension
+    Holds the classname of the module which should be used for sharing. This
+    value can either come from config file, "MYPP_SHARE_MODULE" environment
+    variable or fallback to CPAN::Uploader.
+
 METHODS
   new
      $self = App::Mypp->new;
@@ -177,6 +182,13 @@ METHODS
   make($what);
     Will create "Makefile.PL", unless already exists, then run perl on the
     make script, and then execute "make $what".
+
+  tag_and_commit
+    Will commit with the text from Changes and create a tag
+
+  share_via_git
+    Will use git and push changes and tags to "origin". The changes will be
+    pushed to the currently active branch.
 
   t_pod
     Will create "t/99-pod-coverage.t" and "t/99-pod.t".
