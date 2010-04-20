@@ -32,7 +32,7 @@ while(<$MODULE>) {
         print $OUT "print '$synopsis';\n}";
         $print = 0;
     }
-    if(/^=cut/) {
+    if(/^=cut/ or /^}/) {
         $print = 1;
     }
     if(/^=head1 SYNOPSIS/) {
