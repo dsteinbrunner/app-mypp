@@ -5,8 +5,11 @@ use Test::More;
 use App::Mypp;
 
 plan tests =>
-      1 # various
+      1
     + 8 # attributes
+    + 5 # various
+    + 6 # makefile
+    + 3 # manifest
     + 4 # methods
 ;
 
@@ -31,7 +34,7 @@ eval { # attributes
     is($app->changes->{'version'}, '0.01', 'changes->version is set');
 } or BAIL_OUT "something bad happened: $@";
 
-eval { # methods
+eval { # various
     ok($app->timestamp_to_changes, 'timestamp_to_changes() succeeded');
     ok($app->update_version_info, 'update_version_info() succeeded');
     ok($app->generate_readme, 'generate_readme() succeeded');
@@ -41,31 +44,46 @@ eval { # methods
         ok($app->clean, 'clean() succeeded');
     };
 
-    {
-        local $App::Mypp::MAKEFILE_FILENAME = 't/Makefile.test';
-        ok($app->makefile, 'makefile() succeeded');
-        ok(-e $App::Mypp::MAKEFILE_FILENAME, 'Makefile.PL created');
-        open my $MAKEFILE, '<', $App::Mypp::MAKEFILE_FILENAME or die $!;
-        my $makefile = do { local $/; <$MAKEFILE> };
-        my $name = $app->name;
-        my $top_module = $app->top_module;
-        like($makefile, qr{name q\($name\)}, 'name is part of Makefile.PL');
-        like($makefile, qr{all_from q\($top_module\)}, 'all_from is part of Makefile.PL');
-        like($makefile, qr{bugtracker q\(http://rt.cpan.org/NoAuth/Bugs.html\?Dist=$name\);}, 'bugtracker is part of Makefile.PL');
-        like($makefile, qr{homepage q\(http://search.cpan.org/dist/$name\);}, 'homepage is part of Makefile.PL');
-       #like($makefile, qr{repository q\(git://github.com/\);}, 'repository is part of Makefile.PL');
-    }
+    1;
+} or diag $@;
 
-    TODO: {
-        todo_skip 'difficult to make stable', 3;
-        unlink 'MANIFEST', 'MANIFEST.SKIP';
-        ok($app->manifest, 'manifest() succeeded');
-        ok(-e 'MANIFEST', 'MANIFEST exists');
-        ok(-e 'MANIFEST.SKIP', 'MANIFEST.SKIP exists');
-    }
+eval {
+    local $App::Mypp::MAKEFILE_FILENAME = 't/Makefile.test';
+    ok($app->makefile, 'makefile() succeeded');
+    ok(-e $App::Mypp::MAKEFILE_FILENAME, 'Makefile.PL created');
+    open my $MAKEFILE, '<', $App::Mypp::MAKEFILE_FILENAME or die $!;
+    my $makefile = do { local $/; <$MAKEFILE> };
+    my $name = $app->name;
+    my $top_module = $app->top_module;
+    like($makefile, qr{name q\($name\)}, 'name is part of Makefile.PL');
+    like($makefile, qr{all_from q\($top_module\)}, 'all_from is part of Makefile.PL');
+    like($makefile, qr{bugtracker q\(http://rt.cpan.org/NoAuth/Bugs.html\?Dist=$name\);}, 'bugtracker is part of Makefile.PL');
+    like($makefile, qr{homepage q\(http://search.cpan.org/dist/$name\);}, 'homepage is part of Makefile.PL');
+    #like($makefile, qr{repository q\(git://github.com/\);}, 'repository is part of Makefile.PL');
 
     1;
-} or BAIL_OUT "something bad happened: $@";
+} or diag $@;
+
+TODO: {
+    todo_skip 'difficult to make stable', 3;
+    unlink 'MANIFEST', 'MANIFEST.SKIP';
+    ok($app->manifest, 'manifest() succeeded');
+    ok(-e 'MANIFEST', 'MANIFEST exists');
+    ok(-e 'MANIFEST.SKIP', 'MANIFEST.SKIP exists');
+}
+
+eval {
+    unlink 't/00-load.t';
+    unlink 't/99-pod.t';
+    unlink 't/99-pod-coverage.t';
+    ok($app->t_load, 't_load() succeeded');
+    ok(-e 't/00-load.t', 't/00-load.t created');
+    ok($app->t_pod, 't_load() succeeded');
+    ok(-e 't/99-pod.t', 't/99-pod.t created');
+    ok(-e 't/99-pod-coverage.t', 't/99-pod-coverage.t created');
+
+    1;
+} or diag $@;
 
 #==============================================================================
 sub init {

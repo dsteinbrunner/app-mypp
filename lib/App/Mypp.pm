@@ -459,6 +459,77 @@ sub make {
     $self->_vsystem(make => @_);
 }
 
+=head2 t_pod
+
+Will create C<t/99-pod-coverage.t> and C<t/99-pod.t>.
+
+=cut
+
+sub t_pod {
+    my $self = shift;
+
+    open my $POD_COVERAGE, '>', 't/99-pod-coverage.t' or die "Write 't/99-pod-coverage.t': $!\n";
+
+    print $POD_COVERAGE $self->_t_header;
+    print $POD_COVERAGE <<'TEST';
+eval 'use Test::Pod::Coverage; 1' or plan skip_all => 'Test::Pod::Coverage required';
+all_pod_coverage_ok();
+TEST
+
+    print "Wrote t/99-pod-coverage.t\n" unless $SILENT;
+
+    open my $POD, '>', 't/99-pod.t' or die "Write 't/99-pod.t': $!\n";
+    print $POD $self->_t_header;
+    print $POD <<'TEST';
+eval 'use Test::Pod; 1' or plan skip_all => 'Test::Pod required';
+all_pod_files_ok();
+TEST
+
+    print "Wrote t/99-pod.t\n" unless $SILENT;
+
+    return 1;
+}
+
+=head2 t_load
+
+Will create C<t/00-load.t>.
+
+=cut
+
+sub t_load {
+    my $self = shift;
+    my @modules;
+
+    finddepth(sub {
+        return unless($File::Find::name =~ /\.pm$/);
+        $File::Find::name =~ s,.pm$,,;
+        $File::Find::name =~ s,lib/?,,;
+        $File::Find::name =~ s,/,::,g;
+        push @modules, $File::Find::name;
+    }, 'lib');
+
+    open my $USE_OK, '>', 't/00-load.t' or die "Write 't/00-load.t': $!\n";
+
+    print $USE_OK $self->_t_header;
+    printf $USE_OK "plan tests => %i;\n", int @modules;
+
+    for my $module (sort { $a cmp $b } @modules) {
+        printf $USE_OK "use_ok('%s');\n", $module;
+    }
+
+    print "Wrote t/00-load.t\n" unless $SILENT;
+
+    return 1;
+}
+
+sub _t_header {
+    return <<'HEADER';
+#!/usr/bin/perl
+use lib qw(lib);
+use Test::More;
+HEADER
+}
+
 sub _vsystem {
     shift; # shift off class/object
     print "\$ @_\n" unless $SILENT;
