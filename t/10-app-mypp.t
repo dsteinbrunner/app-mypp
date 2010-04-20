@@ -4,15 +4,19 @@ use lib q(lib);
 use Test::More;
 use App::Mypp;
 
-plan tests => 1 + 8 + 1;
+plan tests =>
+      1 # various
+    + 8 # attributes
+    + 3 # methods
+;
 
-my $app = App::Mypp->new;
+init();
+my $app;
 
-$App::Mypp::SILENT = 1;
-
-init_changes();
-
-ok($app, 'App::Mypp instace constructed') or BAIL_OUT 'Cannot construct object';
+eval {
+    $app = App::Mypp->new;
+    ok($app, 'App::Mypp instace constructed');
+} or BAIL_OUT 'Cannot construct object';
 
 eval { # attributes
     is(ref $app->config, 'HASH', 'attr config is a hash ref');
@@ -28,10 +32,12 @@ eval { # attributes
 eval { # methods
     ok($app->timestamp_to_changes, 'timestamp_to_changes() succeeded');
     ok($app->update_version_info, 'update_version_info() succeeded');
+    ok($app->generate_readme, 'generate_readme() succeeded');
 } or BAIL_OUT "something bad happened: $@";
 
 #==============================================================================
-sub init_changes {
+sub init {
+    $App::Mypp::SILENT = 1;
     $App::Mypp::CHANGES_FILENAME = 't/Changes.test';
 
     open my $CHANGES, '>', $App::Mypp::CHANGES_FILENAME or BAIL_OUT 'cannot write to t/Changes.test';

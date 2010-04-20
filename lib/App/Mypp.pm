@@ -343,6 +343,26 @@ sub update_version_info {
     return 1;
 }
 
+=head2 generate_readme
+
+Will generate a C<README> file from the plain old documentation in top
+module.
+
+=cut
+
+sub generate_readme {
+    my $self = shift;
+    return $self->_vsystem(
+        sprintf '%s %s > %s', 'perldoc -tT', $self->top_module, 'README'
+    ) ? 0 : 1;
+}
+
+sub _vsystem {
+    shift; # shift off class/object
+    print "\$ @_\n" unless $SILENT;
+    system @_;
+}
+
 sub _filename_to_module {
     local $_ = $_[1];
     s,\.pm,,;
