@@ -6,12 +6,13 @@ use App::Mypp;
 
 plan tests =>
       1
-    + 11 # attributes
+    + 9 # attributes
     + 5 # various
     + 6 # makefile
     + 3 # manifest
     + 4 # methods
     + 3 # pause_info
+    + 4 # share_via_extension
 ;
 
 -d '.git' or BAIL_OUT 'cannot run test without .git repo';
@@ -34,13 +35,6 @@ eval { # attributes
     like($app->changes->{'text'}, qr{^0\.01.*Init repo}s, 'changes->text is set');
     is($app->changes->{'version'}, '0.01', 'changes->version is set');
     is($app->dist_file, 'App-Mypp-0.01.tar.gz', 'dist_file is set');
-
-    {
-        is($app->share_extension, 'CPAN::Uploader', 'share_extension has default value');
-        local $ENV{'MYPP_SHARE_MODULE'} = 'Foo::Module';
-        $app->{'share_extension'} = undef;
-        is($app->share_extension, 'Foo::Module', 'share_extension has environment value');
-    }
 
     1;
 } or diag $@;
@@ -100,6 +94,26 @@ eval {
     is(ref $app->pause_info, 'HASH', 'pause_info is a hashref');
     is($app->pause_info->{'user'}, 'john', 'pause_info->username is set');
     is($app->pause_info->{'password'}, 's3cret', 'pause_info->password is set');
+
+    1;
+} or diag $@;
+
+eval {
+    is($app->share_extension, 'CPAN::Uploader', 'share_extension has default value');
+    local $ENV{'MYPP_SHARE_MODULE'} = 'Foo::Share::Module';
+    $app->{'share_extension'} = undef;
+    is($app->share_extension, 'Foo::Share::Module', 'share_extension has environment value');
+
+    $INC{'Foo/Share/Module.pm'} = 1;
+    eval '
+        package Foo::Share::Module;
+        our $INPUT;
+        sub upload_file { $INPUT = [@_] }
+        1;
+    ' or die $@;
+
+    ok($app->share_via_extension, 'share_via_extension() succeeded');
+    is_deeply($Foo::Share::Module::INPUT, ['Foo::Share::Module', 'App-Mypp-0.01.tar.gz'], 'Foo::Share::Module->upload_file was called');
 
     1;
 } or diag $@;

@@ -64,7 +64,7 @@ SAMPLE CONFIG FILE
  
      # Not in use if share_extension == CPAN::Uploader. Usage:
      # share_extension->upload_file($dist_file, share_params);
-     share_params: { answer: 42 }
+     share_params: [ { answer: 42 } ]
 
     All config params are optional, since mypp will probably figure out the
     information for you.
@@ -153,6 +153,10 @@ ATTRIBUTES
     value can either come from config file, "MYPP_SHARE_MODULE" environment
     variable or fallback to CPAN::Uploader.
 
+  share_params
+    This attribute must hold an array-ref, since it is deflated as a list
+    when used as arguments to "share_extension"'s "upload_file()" method.
+
 METHODS
   new
      $self = App::Mypp->new;
@@ -189,6 +193,9 @@ METHODS
   share_via_git
     Will use git and push changes and tags to "origin". The changes will be
     pushed to the currently active branch.
+
+  share_via_extension
+    Will use "share_extension" module and upload the dist file.
 
   t_pod
     Will create "t/99-pod-coverage.t" and "t/99-pod.t".

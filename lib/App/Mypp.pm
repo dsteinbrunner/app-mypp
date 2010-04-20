@@ -71,7 +71,7 @@ anything, so 1) it just works 2) it might not work as you want it to.
  
  # Not in use if share_extension == CPAN::Uploader. Usage:
  # share_extension->upload_file($dist_file, share_params);
- share_params: { answer: 42 }
+ share_params: [ { answer: 42 } ]
 
 All config params are optional, since mypp will probably figure out the
 information for you.
@@ -329,7 +329,6 @@ variable or fallback to L<CPAN::Uploader>.
 
 =cut
 
-# $str = $self->share_extension
 _from_config share_extension => sub {
     my $self = shift;
 
@@ -338,7 +337,13 @@ _from_config share_extension => sub {
     return 'CPAN::Uploader';
 };
 
-# $hash = $self->share_params;
+=head2 share_params
+
+This attribute must hold an array-ref, since it is deflated as a list when
+used as arguments to L</share_extension>'s C<upload_file()> method.
+
+=cut
+
 _from_config share_params => sub {
     my $self = shift;
     return $self->config->{'share_params'} if($self->config->{'share_params'});
@@ -556,6 +561,35 @@ sub share_via_git {
 
     return 1;
 }
+
+=head2 share_via_extension
+
+Will use L</share_extension> module and upload the dist file.
+
+=cut
+
+sub share_via_extension {
+    my $self = shift;
+    my $file = $self->dist_file;
+    my $share_extension = $self->share_extension;
+
+    eval "use $share_extension; 1" or die "This feature requires $share_extension to be installed";
+
+    # might die...
+    if($share_extension eq 'CPAN::Uploader') {
+        my $pause = $self->pause_info;
+        $share_extension->upload_file($file, {
+            user => $pause->{'user'},
+            password => $pause->{'password'},
+        });
+    }
+    else {
+        $share_extension->upload_file($file, @{ $self->share_params || [] });
+    }
+
+    return 1;
+}
+
 
 =head2 t_pod
 
