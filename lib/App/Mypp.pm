@@ -662,6 +662,29 @@ use Test::More;
 HEADER
 }
 
+=head2 help
+
+Will display L</SYNOPSIS>.
+
+=cut
+
+sub help {
+    open my $POD, '<', __FILE__ or die "Could not open App::Mypp: $!\n";
+    my $print;
+
+    while(<$POD>) {
+        if($print) {
+            return 1 if(/^=\w+/);
+            print;
+        }
+        elsif(/=head1 SYNOPSIS/) {
+            $print = 1;
+        }
+    }
+
+    return;
+}
+
 sub _vsystem {
     shift; # shift off class/object
     print "\$ @_\n" unless $SILENT;
