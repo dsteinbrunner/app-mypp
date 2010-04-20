@@ -121,6 +121,7 @@ use File::Basename;
 use File::Find;
 use YAML::Tiny;
 
+our $VERSION = '0.01';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $CHANGES_FILENAME = 'Changes';
 our $VERSION_RE = qr/\d+ \. [\d_]+/x;
@@ -332,7 +333,7 @@ sub update_version_info {
     open my $MODULE, '+<', $top_module or die "Read/write '$top_module': $!\n";
     { local $/; $top_module_text = <$MODULE> };
     $top_module_text =~ s/=head1 VERSION.*?\n=/=head1 VERSION\n\n$version\n\n=/s;
-    $top_module_text =~ s/\$VERSION\s*=.*$/\$VERSION = '$version';/m;
+    $top_module_text =~ s/^((?:our)?\s*\$VERSION)\s*=.*$/$1 = '$version';/m;
 
     seek $MODULE, 0, 0;
     print $MODULE $top_module_text;

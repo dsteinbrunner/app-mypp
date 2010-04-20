@@ -27,11 +27,8 @@ eval { # attributes
 
 eval { # methods
     ok($app->timestamp_to_changes, 'timestamp_to_changes() succeeded');
-
-    # this is not a good test :S
-    # ok($app->update_version_info, 'update_version_info() succeeded');
+    ok($app->update_version_info, 'update_version_info() succeeded');
 } or BAIL_OUT "something bad happened: $@";
-
 
 #==============================================================================
 sub init_changes {
