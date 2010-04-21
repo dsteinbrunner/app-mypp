@@ -3,13 +3,14 @@
 use strict;
 use warnings;
 
-open my $MODULE, '<', 'lib/App/Mypp.pm' or die $!;
-open my $BIN, '<', 'bin/mypp' or die $!;
-open my $OUT, '>', 'bin/mypp-packed' or die $!;
-
 my $print = 1;
 my $record = q();
 my $synopsis = q();
+my $out_file = q(script/mypp-packed);
+
+open my $MODULE, '<', 'lib/App/Mypp.pm' or die $!;
+open my $BIN, '<', 'bin/mypp' or die $!;
+open my $OUT, '>', $out_file or die $!;
 
 print $OUT scalar <$BIN>; # she-bang
 
@@ -50,4 +51,5 @@ while(<$BIN>) {
 }
 
 
-print "packed\n";
+chmod 0555, $out_file;
+print "App::Mypp packed to $out_file\n";
