@@ -2,7 +2,7 @@ NAME
     App::Mypp - Maintain Your Perl Project
 
 VERSION
-    0.01
+    0.03
 
 DESCRIPTION
     mypp is a result of me getting tired of doing the same stuff - or rather
@@ -180,6 +180,9 @@ METHODS
   makefile
     Will create a Makefile.PL, unless it already exists.
 
+  requires(lib|t)
+    Will search for required modules in either the "lib/" or "t/" directory.
+
   manifest
     Will create MANIFEST and MANIFEST.SKIP.
 
@@ -210,7 +213,7 @@ SEE ALSO
     App::Cpanminus, Dist::Zilla, <http://jhthorsen.github.com/app-mypp>.
 
 BUGS
-    Report bugs and issues at <http://github.com/jhthorsen/snippets/issues>.
+    Report bugs and issues at <http://github.com/jhthorsen/app-mypp/issues>.
 
 COPYRIGHT & LICENSE
     Copyright 2007 Jan Henning Thorsen, all rights reserved.
