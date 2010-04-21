@@ -620,6 +620,7 @@ sub _script_requires {
     }
 
     for my $module (@$modules) {
+        local $SIG{'__WARN__'} = sub { print $_[0] unless($_[0] =~ /\sredefined\sat/)};
         eval "require $module";
         my $version = $self->_version_from_module($module) or next;
         $requires->{$module} = $version;
@@ -826,7 +827,7 @@ sub help {
 sub _vsystem {
     shift; # shift off class/object
     print "\$ @_\n" unless $SILENT;
-    system @_;
+    return $SILENT ? system "@_ 1>/dev/null 2>/dev/null" : system @_;
 }
 
 sub _filename_to_module {
