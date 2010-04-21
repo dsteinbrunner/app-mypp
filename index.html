@@ -73,7 +73,7 @@ title: App::Mypp
 wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - | perl -
 </pre>
 
-<h3 id="features">Features</h3>
+<h2 id="features">Features</h2>
 <ul>
     <li>
         Generates <a href="http://search.cpan.org/dist/Module-Install">Module::Install</a> styled Makefile.PL
@@ -94,7 +94,7 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
     <li>Can properly clean up <i>all</i> build files</li>
 </ul>
 
-<h2><a name="synopsis">Synopsis</a></h1>
+<h2><a name="synopsis">Synopsis</a></h2>
 <pre>
  Usage mypp [option]
 
@@ -135,7 +135,7 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
     method/attribute holds + any action the method might do.
 </p>
 
-<h2><a name="sharing_the_module">Sharing the module</a></h1>
+<h2><a name="sharing_the_module">Sharing the module</a></h2>
 <p>By default the <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
 This module will use the information from <code>$HOME/.pause</code> to find login
 information:</p>
@@ -150,7 +150,7 @@ information:</p>
  git push --tags origin</pre>
 <p>The commit and tag is done when on <code>-dist</code>, while pushing the changes to
 origin is done on <code>-share</code>.</p>
-<h2><a name="changes">Changes file</a></h1>
+<h2><a name="changes">Changes file</a></h2>
 <p>The expected format in <code>Changes</code> is:</p>
 <pre>
  Some random header, for Example:
@@ -164,7 +164,7 @@ origin is done on <code>-share</code>.</p>
   * First release
   * Add some feature</pre>
 <p><code>mypp</code> will automatically add the date before creating a dist.</p>
-<h2><a name="sample_config_file">Sample config file</a></h1>
+<h2><a name="sample_config_file">Sample config file</a></h2>
 <pre>
  ---
  # Default to a converted version of top_module
@@ -188,13 +188,13 @@ origin is done on <code>-share</code>.</p>
 <p>All config params are optional, since <code>mypp</code> will probably figure out the
 information for you.</p>
 
-<h2><a name="attributes">Attributes</a></h1>
-<h3><a name="config">config</a></h2>
+<h2><a name="attributes">Attributes</a></h2>
+<h2><a name="config">config</a></h2>
 <p>Holds the config from <code>mypp.yml</code> or <code>MYPP_CONFIG</code> environment variable.</p>
-<h3><a name="name">name</a></h2>
+<h2><a name="name">name</a></h2>
 <p>Holds the project name. The project name is extracted from the
 <a href="#top_module">top_module</a>, unless set in config file. Example: <code>foo-bar</code>.</p>
-<h3><a name="top_module">top_module</a></h2>
+<h2><a name="top_module">top_module</a></h2>
 <p>Holds the top module location. This path is extracted from either
 <code>name</code> in config file or the basename of the project. Example value:
 <code>lib/Foo/Bar.pm</code>.</p>
@@ -202,19 +202,19 @@ information for you.</p>
 <pre>
  ./foo-bar/lib/Foo/Bar.pm</pre>
 <p>Where &quot;foo-bar&quot; is the basename.</p>
-<h3><a name="top_module_name">top_module_name</a></h2>
+<h2><a name="top_module_name">top_module_name</a></h2>
 <p>Returns the top module name, extracted from <a href="#top_module">top_module</a>. Example value:
 <code>Foo::Bar</code>.</p>
-<h3><a name="changes">changes</a></h2>
+<h2><a name="changes">changes</a></h2>
 <p>Holds the latest information from <code>Changes</code>. Example:</p>
 <pre>
  {
    text =&gt; qq(0.03 .... \n * Something has changed),
    version =&gt; 0.03,
  }</pre>
-<h3><a name="dist_file">dist_file</a></h2>
+<h2><a name="dist_file">dist_file</a></h2>
 <p>Returns the name of the target dist file.</p>
-<h3><a name="pause_info">pause_info</a></h2>
+<h2><a name="pause_info">pause_info</a></h2>
 <p>Holds information from <code>$HOME/.pause</code>. See <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> for details.
 Example:</p>
 <pre>
@@ -222,56 +222,56 @@ Example:</p>
    user =&gt; 'johndoe',
    password =&gt; 's3cret',
  }</pre>
-<h3><a name="share_extension">share_extension</a></h2>
+<h2><a name="share_extension">share_extension</a></h2>
 <p>Holds the classname of the module which should be used for sharing. This
 value can either come from config file, <code>MYPP_SHARE_MODULE</code> environment
 variable or fallback to <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a>.</p>
-<h3><a name="share_params">share_params</a></h2>
+<h2><a name="share_params">share_params</a></h2>
 <p>This attribute must hold an array-ref, since it is deflated as a list when
 used as arguments to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
-<h2><a name="methods">Methods</a></h1>
-<h3><a name="new">new</a></h2>
+<h2><a name="methods">Methods</a></h2>
+<h2><a name="new">new</a></h2>
 <p>Will create a new object</p>
-<h3><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
+<h2><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
 <p>Will insert a timestamp in Changes on the first line looking like this:</p>
 <pre>
  ^\d+\.[\d_]+\s*$</pre>
-<h3><a name="update_version_info">update_version_info</a></h2>
+<h2><a name="update_version_info">update_version_info</a></h2>
 <p>Will update version in top module, with the latest version from <code>Changes</code>.</p>
-<h3><a name="generate_readme">generate_readme</a></h2>
+<h2><a name="generate_readme">generate_readme</a></h2>
 <p>Will generate a <code>README</code> file from the plain old documentation in top
 module.</p>
-<h3><a name="clean">clean</a></h2>
+<h2><a name="clean">clean</a></h2>
 <p>Will remove all files which should not be part of your repo.</p>
-<h3><a name="makefile">makefile</a></h2>
+<h2><a name="makefile">makefile</a></h2>
 <p>Will create a Makefile.PL, unless it already exists.</p>
-<h3><a name="manifest">manifest</a></h2>
+<h2><a name="manifest">manifest</a></h2>
 <p>Will create MANIFEST and MANIFEST.SKIP.</p>
-<h3><a name="make__what__">make($what)</a></h2>
+<h2><a name="make__what__">make($what)</a></h2>
 <p>Will create <code>Makefile.PL</code>, unless already exists, then run perl on the
 make script, and then execute <code>make $what</code>.</p>
-<h3><a name="tag_and_commit">tag_and_commit</a></h2>
+<h2><a name="tag_and_commit">tag_and_commit</a></h2>
 <p>Will commit with the text from Changes and create a tag</p>
-<h3><a name="share_via_git">share_via_git</a></h2>
+<h2><a name="share_via_git">share_via_git</a></h2>
 <p>Will use git and push changes and tags to &quot;origin&quot;. The changes will be
 pushed to the currently active branch.</p>
-<h3><a name="share_via_extension">share_via_extension</a></h2>
+<h2><a name="share_via_extension">share_via_extension</a></h2>
 <p>Will use <a href="#share_extension">share_extension</a> module and upload the dist file.</p>
-<h3><a name="t_pod">t_pod</a></h2>
+<h2><a name="t_pod">t_pod</a></h2>
 <p>Will create <code>t/99-pod-coverage.t</code> and <code>t/99-pod.t</code>.</p>
-<h3><a name="t_load">t_load</a></h2>
+<h2><a name="t_load">t_load</a></h2>
 <p>Will create <code>t/00-load.t</code>.</p>
-<h3><a name="help">help</a></h2>
+<h2><a name="help">help</a></h2>
 <p>Will display <a href="#synopsis">SYNOPSIS</a> on STDOUT.</p>
-<h2><a name="see_also">See also</a></h1>
+<h2><a name="see_also">See also</a></h2>
 <p><a href="http://search.cpan.org/dist/App-Cpanminus">the App::Cpanminus manpage</a>,
 <a href="http://search.cpan.org/dist/Dist-Zilla">the Dist::Zilla manpage</a>,
 <a href="http://github.com/jhthorsen/app-mypp">http://github.com/jhthorsen/app-mypp</a>.</p>
-<h2><a name="bugs">Bugs</a></h1>
+<h2><a name="bugs">Bugs</a></h2>
 <p>Report bugs and issues at <a href="http://github.com/jhthorsen/app-mypp/issues">http://github.com/jhthorsen/app-mypp/issues</a>.</p>
-<h2><a name="copyright___license">Copyright &amp; license</a></h1>
+<h2><a name="copyright___license">Copyright &amp; license</a></h2>
 <p>Copyright 2007 Jan Henning Thorsen, all rights reserved.</p>
 <p>This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.</p>
-<h2><a name="author">Author</a></h1>
+<h2><a name="author">Author</a></h2>
 <p><a href="http://flodhest.net/contact">Jan Henning Thorsen</a>, <code>jhthorsen at cpan.org</code></p>
