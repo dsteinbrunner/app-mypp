@@ -13,7 +13,9 @@ My::Test::Project - can do stuff
 
 use strict;
 use warnings;
-use IPC::Open2;
+use POSIX;
+require Symbol;
+use base qw/Tie::Hash/;
 
 =head1 AUTHOR
 
