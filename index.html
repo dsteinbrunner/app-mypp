@@ -96,37 +96,37 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
 
 <h2><a name="synopsis">Synopsis</a></h2>
 <pre>
- Usage mypp [option]
+Usage mypp [option]
 
- -update
-  * Update version information in main module
-  * Create/update t/00-load.t and t/99-pod*t
-  * Create/update README
+-update
+ * Update version information in main module
+ * Create/update t/00-load.t and t/99-pod*t
+ * Create/update README
 
- -build
-  * Same as -update
-  * Update Changes with release date
-  * Create MANIFEST* and META.yml
-  * Tag and commit the changes (locally)
-  * Build a distribution (.tar.gz)
+-build
+ * Same as -update
+ * Update Changes with release date
+ * Create MANIFEST* and META.yml
+ * Tag and commit the changes (locally)
+ * Build a distribution (.tar.gz)
 
- -share
-  * Push commit and tag to &quot;origin&quot;
-  * Upload the disted file to CPAN
+-share
+ * Push commit and tag to &quot;origin&quot;
+ * Upload the disted file to CPAN
 
- -test
-  * Create/update t/00-load.t and t/99-pod*t
-  * Test the project
+-test
+ * Create/update t/00-load.t and t/99-pod*t
+ * Test the project
 
- -clean
-  * Remove files and directories which should not be included
-    in the project repo
+-clean
+ * Remove files and directories which should not be included
+   in the project repo
 
- -makefile
-  * Create a Makefile.PL from plain guesswork
+-makefile
+ * Create a Makefile.PL from plain guesswork
 
- -man
-  * Display manual for mypp
+-man
+ * Display manual for mypp
 </pre>
 <p>
     It is also possible to call <code>mypp</code> with any of the
@@ -140,51 +140,51 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
 This module will use the information from <code>$HOME/.pause</code> to find login
 information:</p>
 <pre>
- user your_pause_username
- password your_secret_pause_password</pre>
+user your_pause_username
+password your_secret_pause_password</pre>
 <p>It will also use git to push changes and tag a new release:</p>
 <pre>
- git commit -a -m &quot;$message_from_changes_file&quot;
- git tag &quot;$latest_version_in_changes_file&quot;
- git push origin $current_branch
- git push --tags origin</pre>
+git commit -a -m &quot;$message_from_changes_file&quot;
+git tag &quot;$latest_version_in_changes_file&quot;
+git push origin $current_branch
+git push --tags origin</pre>
 <p>The commit and tag is done when on <code>-dist</code>, while pushing the changes to
 origin is done on <code>-share</code>.</p>
 <h2><a name="changes">Changes file</a></h2>
 <p>The expected format in <code>Changes</code> is:</p>
 <pre>
- Some random header, for Example:
- Revision history for Foo-Bar
+Some random header, for Example:
+Revision history for Foo-Bar
 
- 0.02
-  * Fix something
-  * Add something else
+0.02
+ * Fix something
+ * Add something else
 
- 0.01 Tue Apr 20 19:34:15 CEST 2010
-  * First release
-  * Add some feature</pre>
+0.01 Tue Apr 20 19:34:15 CEST 2010
+ * First release
+ * Add some feature</pre>
 <p><code>mypp</code> will automatically add the date before creating a dist.</p>
 <h2><a name="sample_config_file">Sample config file</a></h2>
 <pre>
- ---
- # Default to a converted version of top_module
- name: Foo-Bar
- 
- # Default to a converted version of the project folder
- # Example: ./foo-bar/lib/Foo/Bar.pm, were &quot;foo-bar&quot; is the
- # project folder.
- top_module: lib/Foo/Bar.pm 
- 
- # Default to a converted version of top_module.
- top_module_name: Foo::Bar 
- 
- # Default to CPAN::Uploader. Can also be set through
- # MYPP_SHARE_MODULE environment variable.
- share_extension: AnyModuleName
- 
- # Not in use if share_extension == CPAN::Uploader. Usage:
- # share_extension-&gt;upload_file($dist_file, share_params);
- share_params: [ { answer: 42 } ]</pre>
+---
+# Default to a converted version of top_module
+name: Foo-Bar
+
+# Default to a converted version of the project folder
+# Example: ./foo-bar/lib/Foo/Bar.pm, were &quot;foo-bar&quot; is the
+# project folder.
+top_module: lib/Foo/Bar.pm 
+
+# Default to a converted version of top_module.
+top_module_name: Foo::Bar 
+
+# Default to CPAN::Uploader. Can also be set through
+# MYPP_SHARE_MODULE environment variable.
+share_extension: AnyModuleName
+
+# Not in use if share_extension == CPAN::Uploader. Usage:
+# share_extension-&gt;upload_file($dist_file, share_params);
+share_params: [ { answer: 42 } ]</pre>
 <p>All config params are optional, since <code>mypp</code> will probably figure out the
 information for you.</p>
 
@@ -200,7 +200,7 @@ information for you.</p>
 <code>lib/Foo/Bar.pm</code>.</p>
 <p>The project might look like this:</p>
 <pre>
- ./foo-bar/lib/Foo/Bar.pm</pre>
+./foo-bar/lib/Foo/Bar.pm</pre>
 <p>Where &quot;foo-bar&quot; is the basename.</p>
 <h2><a name="top_module_name">top_module_name</a></h2>
 <p>Returns the top module name, extracted from <a href="#top_module">top_module</a>. Example value:
@@ -208,20 +208,20 @@ information for you.</p>
 <h2><a name="changes">changes</a></h2>
 <p>Holds the latest information from <code>Changes</code>. Example:</p>
 <pre>
- {
-   text =&gt; qq(0.03 .... \n * Something has changed),
-   version =&gt; 0.03,
- }</pre>
+{
+  text =&gt; qq(0.03 .... \n * Something has changed),
+  version =&gt; 0.03,
+}</pre>
 <h2><a name="dist_file">dist_file</a></h2>
 <p>Returns the name of the target dist file.</p>
 <h2><a name="pause_info">pause_info</a></h2>
 <p>Holds information from <code>$HOME/.pause</code>. See <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> for details.
 Example:</p>
 <pre>
- {
-   user =&gt; 'johndoe',
-   password =&gt; 's3cret',
- }</pre>
+{
+  user =&gt; 'johndoe',
+  password =&gt; 's3cret',
+}</pre>
 <h2><a name="share_extension">share_extension</a></h2>
 <p>Holds the classname of the module which should be used for sharing. This
 value can either come from config file, <code>MYPP_SHARE_MODULE</code> environment
@@ -235,7 +235,7 @@ used as arguments to <a href="#share_extension">share_extension</a>'s <code>uplo
 <h2><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
 <p>Will insert a timestamp in Changes on the first line looking like this:</p>
 <pre>
- ^\d+\.[\d_]+\s*$</pre>
+^\d+\.[\d_]+\s*$</pre>
 <h2><a name="update_version_info">update_version_info</a></h2>
 <p>Will update version in top module, with the latest version from <code>Changes</code>.</p>
 <h2><a name="generate_readme">generate_readme</a></h2>
