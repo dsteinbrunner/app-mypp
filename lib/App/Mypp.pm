@@ -639,7 +639,7 @@ sub manifest {
 
     open my $SKIP, '>', 'MANIFEST.SKIP' or die "Write 'MANIFEST.SKIP': $!\n";
     print $SKIP "$_\n" for qw(
-                           ^dperl.yml
+                           ^mypp.yml
                            .git
                            \.old
                            \.swp
