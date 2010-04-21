@@ -330,7 +330,7 @@ $self->_vsystem(make => @_);
 }
 sub tag_and_commit {
 my $self = shift;
-$self->_vsystem(git => commit => -a => -m => $self->changes->{'latest'});
+$self->_vsystem(git => commit => -a => -m => $self->changes->{'text'});
 $self->_vsystem(git => tag => $self->changes->{'version'});
 return 1;
 }
@@ -413,6 +413,10 @@ print '
   * Create/update t/00-load.t and t/99-pod*t
   * Create/update README
 
+ -test
+  * Create/update t/00-load.t and t/99-pod*t
+  * Test the project
+
  -build
   * Same as -update
   * Update Changes with release date
@@ -423,10 +427,6 @@ print '
  -share
   * Push commit and tag to "origin"
   * Upload the disted file to CPAN
-
- -test
-  * Create/update t/00-load.t and t/99-pod*t
-  * Test the project
 
  -clean
   * Remove files and directories which should not be included
@@ -480,6 +480,12 @@ $app->t_load;
 $app->t_pod;
 $app->generate_readme;
 }
+elsif($action eq 'test') {
+$app->clean;
+$app->t_load;
+$app->t_pod;
+$app->make('test');
+}
 elsif($action eq 'build') {
 $app->clean;
 $app->t_load;
@@ -488,15 +494,9 @@ $app->timestamp_to_changes;
 $app->update_version_info;
 $app->generate_readme;
 $app->manifest;
-$app->_vsystem('rm ' .$app->name .'* 2>/dev/null');
 $app->tag_and_commit;
+$app->_vsystem('rm ' .$app->name .'* 2>/dev/null');
 $app->make('dist');
-}
-elsif($action eq 'test') {
-$app->clean;
-$app->t_load;
-$app->t_pod;
-$app->make('test');
 }
 elsif($action eq 'share') {
 $app->share_via_extension;
