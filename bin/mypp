@@ -21,6 +21,12 @@ if($action eq 'update') {
     $app->t_pod;
     $app->generate_readme;
 }
+elsif($action eq 'test') {
+    $app->clean;
+    $app->t_load;
+    $app->t_pod;
+    $app->make('test');
+}
 elsif($action eq 'build') {
     $app->clean;
     $app->t_load;
@@ -29,15 +35,9 @@ elsif($action eq 'build') {
     $app->update_version_info;
     $app->generate_readme;
     $app->manifest;
-    $app->_vsystem('rm ' .$app->name .'* 2>/dev/null');
     $app->tag_and_commit;
+    $app->_vsystem('rm ' .$app->name .'* 2>/dev/null');
     $app->make('dist');
-}
-elsif($action eq 'test') {
-    $app->clean;
-    $app->t_load;
-    $app->t_pod;
-    $app->make('test');
 }
 elsif($action eq 'share') {
     $app->share_via_extension;

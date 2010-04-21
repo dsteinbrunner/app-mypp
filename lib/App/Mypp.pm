@@ -26,6 +26,10 @@ anything, so 1) it just works 2) it might not work as you want it to.
   * Create/update t/00-load.t and t/99-pod*t
   * Create/update README
 
+ -test
+  * Create/update t/00-load.t and t/99-pod*t
+  * Test the project
+
  -build
   * Same as -update
   * Update Changes with release date
@@ -36,10 +40,6 @@ anything, so 1) it just works 2) it might not work as you want it to.
  -share
   * Push commit and tag to "origin"
   * Upload the disted file to CPAN
-
- -test
-  * Create/update t/00-load.t and t/99-pod*t
-  * Test the project
 
  -clean
   * Remove files and directories which should not be included
