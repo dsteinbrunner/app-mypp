@@ -511,6 +511,8 @@ sub makefile {
     print $MAKEFILE "homepage q(http://search.cpan.org/dist/$name);\n";
     print $MAKEFILE "repository q($repo);\n";
     print $MAKEFILE "\n";
+    print $MAKEFILE "catalyst;\n" if($INC{'Catalyst.pm'});
+    print $MAKEFILE "# install_script glob('bin/*');\n";
     print $MAKEFILE "auto_install;\n";
     print $MAKEFILE "WriteAll;\n";
 
