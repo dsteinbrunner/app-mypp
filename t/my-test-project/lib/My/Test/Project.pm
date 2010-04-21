@@ -1,4 +1,4 @@
-package \ # hide from pause?
+package # hide from pause?
  My::Test::Project;
 
 =head1 NAME
@@ -7,7 +7,7 @@ My::Test::Project - can do stuff
 
 =head1 VERSION
 
-0.01
+0.00
 
 =cut
 
