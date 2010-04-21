@@ -4,7 +4,7 @@ use Cwd;
 use File::Basename;
 use File::Find;
 use YAML::Tiny;
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
@@ -473,14 +473,14 @@ my $method = $action;
 $action =~ s/^-+//;
 $method =~ s/^-+//;
 $method =~ s/-/_/g;
-if($action =~ /^update(?!-)/i) {
+if($action eq 'update') {
 $app->clean;
 $app->update_version_info;
 $app->t_load;
 $app->t_pod;
 $app->generate_readme;
 }
-elsif($action =~ /^build(?!-)/i) {
+elsif($action eq 'build') {
 $app->clean;
 $app->t_load;
 $app->t_pod;
@@ -492,13 +492,13 @@ $app->_vsystem('rm ' .$app->name .'* 2>/dev/null');
 $app->tag_and_commit;
 $app->make('dist');
 }
-elsif($action =~ /^test(?!-)/i) {
+elsif($action eq 'test') {
 $app->clean;
 $app->t_load;
 $app->t_pod;
 $app->make('test');
 }
-elsif($action =~ /^share(?!-)/i) {
+elsif($action eq 'share') {
 $app->share_via_extension;
 $app->share_via_git;
 }
@@ -521,7 +521,7 @@ else {
 die "Failed to execute $app->$method\n";
 }
 }
-elsif($action =~ /^-*man$/i) {
+elsif($action eq 'man') {
 if($0 eq '-') {
 print "Read manual online: http://jhthorsen.github.com/app-mypp\n"
 }

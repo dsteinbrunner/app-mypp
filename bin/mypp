@@ -14,14 +14,14 @@ $action =~ s/^-+//;
 $method =~ s/^-+//;
 $method =~ s/-/_/g;
 
-if($action =~ /^update(?!-)/i) {
+if($action eq 'update') {
     $app->clean;
     $app->update_version_info;
     $app->t_load;
     $app->t_pod;
     $app->generate_readme;
 }
-elsif($action =~ /^build(?!-)/i) {
+elsif($action eq 'build') {
     $app->clean;
     $app->t_load;
     $app->t_pod;
@@ -33,13 +33,13 @@ elsif($action =~ /^build(?!-)/i) {
     $app->tag_and_commit;
     $app->make('dist');
 }
-elsif($action =~ /^test(?!-)/i) {
+elsif($action eq 'test') {
     $app->clean;
     $app->t_load;
     $app->t_pod;
     $app->make('test');
 }
-elsif($action =~ /^share(?!-)/i) {
+elsif($action eq 'share') {
     $app->share_via_extension;
     $app->share_via_git;
 }
@@ -62,7 +62,7 @@ elsif($app->can($method)) {
         die "Failed to execute $app->$method\n";
     }
 }
-elsif($action =~ /^-*man$/i) {
+elsif($action eq 'man') {
     if($0 eq '-') {
         print "Read manual online: http://jhthorsen.github.com/app-mypp\n"
     }
