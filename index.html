@@ -39,7 +39,7 @@ title: App::Mypp
 		<li><a href="#clean">clean</a></li>
 		<li><a href="#makefile">makefile</a></li>
 		<li><a href="#manifest">manifest</a></li>
-		<li><a href="#make__what__"><code>make($what)</code>;</a></li>
+		<li><a href="#make__what__">make($what)</a></li>
 		<li><a href="#tag_and_commit">tag_and_commit</a></li>
 		<li><a href="#share_via_git">share_via_git</a></li>
 		<li><a href="#share_via_extension">share_via_extension</a></li>
@@ -61,9 +61,9 @@ title: App::Mypp
 <h2><a name="version">VERSION</a></h1>
 <p>0.01</p>
 <h2><a name="description">DESCRIPTION</a></h1>
-<p>mypp is a result of me getting tired of doing the same stuff - or
+<p><code>mypp</code> is a result of me getting tired of doing the same stuff - or
 rather forgetting to do the same stuff for each of my perl projects.
-mypp does not feature the same things as Dist::Zilla, but I would
+<code>mypp</code> does not feature the same things as Dist::Zilla, but I would
 like to think of mypp VS dzil as CPAN  vs cpanm - or at least that
 is what I'm aming for. (!) What I don't want to do, is to configure
 anything, so 1) it just works 2) it might not work as you want it to.</p>
@@ -122,7 +122,7 @@ anything, so 1) it just works 2) it might not work as you want it to.</p>
  # Not in use if share_extension == CPAN::Uploader. Usage:
  # share_extension-&gt;upload_file($dist_file, share_params);
  share_params: [ { answer: 42 } ]</pre>
-<p>All config params are optional, since mypp will probably figure out the
+<p>All config params are optional, since <code>mypp</code> will probably figure out the
 information for you.</p>
 <h2><a name="sharing_the_module">SHARING THE MODULE</a></h1>
 <p>By default the <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
@@ -143,20 +143,18 @@ origin is done on <code>-share</code>.</p>
 <p>The expected format in <code>Changes</code> is:</p>
 <pre>
  Some random header, for Example:
- Revision history for Foo-Bar</pre>
-<pre>
+ Revision history for Foo-Bar
+
  0.02
   * Fix something
-  * Add something else</pre>
-<pre>
+  * Add something else
+
  0.01 Tue Apr 20 19:34:15 CEST 2010
   * First release
   * Add some feature</pre>
 <p><code>mypp</code> will automatically add the date before creating a dist.</p>
 <h2><a name="attributes">ATTRIBUTES</a></h1>
 <h3><a name="config">config</a></h2>
-<pre>
- $hash = $self-&gt;config;</pre>
 <p>Holds the config from <code>mypp.yml</code> or <code>MYPP_CONFIG</code> environment variable.</p>
 <h3><a name="name">name</a></h2>
 <p>Holds the project name. The project name is extracted from the
@@ -198,8 +196,6 @@ variable or fallback to <a href="http://search.cpan.org/dist/CPAN-Uploader">the 
 used as arguments to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
 <h2><a name="methods">METHODS</a></h1>
 <h3><a name="new">new</a></h2>
-<pre>
- $self = App::Mypp-&gt;new;</pre>
 <p>Will create a new object</p>
 <h3><a name="timestamp_to_changes">timestamp_to_changes</a></h2>
 <p>Will insert a timestamp in Changes on the first line looking like this:</p>
@@ -216,7 +212,7 @@ module.</p>
 <p>Will create a Makefile.PL, unless it already exists.</p>
 <h3><a name="manifest">manifest</a></h2>
 <p>Will create MANIFEST and MANIFEST.SKIP.</p>
-<h3><a name="make__what__"><code>make($what)</code>;</a></h2>
+<h3><a name="make__what__">make($what)</a></h2>
 <p>Will create <code>Makefile.PL</code>, unless already exists, then run perl on the
 make script, and then execute <code>make $what</code>.</p>
 <h3><a name="tag_and_commit">tag_and_commit</a></h2>
