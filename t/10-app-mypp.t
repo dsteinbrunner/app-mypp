@@ -136,7 +136,7 @@ eval {
     $INC{'Foo/Share/Module.pm'} = 1;
     eval '
         package Foo::Share::Module;
-        our $INPUT;
+        our $INPUT = 1;
         sub upload_file { $INPUT = [@_] }
         1;
     ' or die $@;
