@@ -3,28 +3,17 @@ layout: default
 title: App::Mypp
 ---
 
-<h2>App::Mypp - Maintain Your Perl Project</h2>
-<p>
-    <code>dperl</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym>
-    getting tired of doing the same stuff - or rather forgetting to do the same stuff for
-    each of my perl projects. dperl does <i>not</i> feature the same things
-    as <a href="http://search.cpan.org/dist/Dist-Zilla">Dist::Zilla</a>, but
-    I would like to think of dperl VS dzil as <a href="http://search.cpan.org/dist/CPAN">cpan</a>
-
-    vs <a href="http://search.cpan.org/dist/App-cpanminus">cpanm</a> - or at
-    least that is what I'm aming for (!)
-</p>
-
 <!-- INDEX BEGIN -->
 <div name="index">
 <p><a name="__index__"></a></p>
 <ul>
 
+	<li><a href="#introduction">Introduction</a></li>
 	<li><a href="#features">Features</a></li>
 	<li><a href="#synopsis">Synopsis</a></li>
-	<li><a href="#sample_config_file">Sample config file</a></li>
 	<li><a href="#sharing_the_module">Sharing the module</a></li>
 	<li><a href="#changes">Changes file</a></li>
+	<li><a href="#sample_config_file">Sample config file</a></li>
 	<li><a href="#attributes">Attributes</a></li>
 	<!-- ul>
 
@@ -65,6 +54,24 @@ title: App::Mypp
 </ul>
 </div>
 <!-- INDEX END -->
+
+<h2 id="introduction">Introduction</h2>
+<p>
+    <code>dperl</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym>
+    getting tired of doing the same stuff - or rather forgetting to do the same stuff for
+    each of my perl projects. dperl does <i>not</i> feature the same things
+    as <a href="http://search.cpan.org/dist/Dist-Zilla">Dist::Zilla</a>, but
+    I would like to think of dperl VS dzil as <a href="http://search.cpan.org/dist/CPAN">cpan</a>
+    vs <a href="http://search.cpan.org/dist/App-cpanminus">cpanm</a> - or at
+    least that is what I'm aming for (!)
+</p>
+<p>
+    Want to try it out? Run the line below in your favourite
+    <a href="http://en.wikipedia.org/wiki/Terminal_emulator">terminal</a>:
+</p>
+<pre>
+wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - | perl -
+</pre>
 
 <h3 id="features">Features</h3>
 <ul>
@@ -121,29 +128,6 @@ title: App::Mypp
  -man
   * Display manual for mypp
 </pre>
-<h2><a name="sample_config_file">Sample config file</a></h1>
-<pre>
- ---
- # Default to a converted version of top_module
- name: Foo-Bar
- 
- # Default to a converted version of the project folder
- # Example: ./foo-bar/lib/Foo/Bar.pm, were &quot;foo-bar&quot; is the
- # project folder.
- top_module: lib/Foo/Bar.pm 
- 
- # Default to a converted version of top_module.
- top_module_name: Foo::Bar 
- 
- # Default to CPAN::Uploader. Can also be set through
- # MYPP_SHARE_MODULE environment variable.
- share_extension: AnyModuleName
- 
- # Not in use if share_extension == CPAN::Uploader. Usage:
- # share_extension-&gt;upload_file($dist_file, share_params);
- share_params: [ { answer: 42 } ]</pre>
-<p>All config params are optional, since <code>mypp</code> will probably figure out the
-information for you.</p>
 <h2><a name="sharing_the_module">Sharing the module</a></h1>
 <p>By default the <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
 This module will use the information from <code>$HOME/.pause</code> to find login
@@ -173,6 +157,30 @@ origin is done on <code>-share</code>.</p>
   * First release
   * Add some feature</pre>
 <p><code>mypp</code> will automatically add the date before creating a dist.</p>
+<h2><a name="sample_config_file">Sample config file</a></h1>
+<pre>
+ ---
+ # Default to a converted version of top_module
+ name: Foo-Bar
+ 
+ # Default to a converted version of the project folder
+ # Example: ./foo-bar/lib/Foo/Bar.pm, were &quot;foo-bar&quot; is the
+ # project folder.
+ top_module: lib/Foo/Bar.pm 
+ 
+ # Default to a converted version of top_module.
+ top_module_name: Foo::Bar 
+ 
+ # Default to CPAN::Uploader. Can also be set through
+ # MYPP_SHARE_MODULE environment variable.
+ share_extension: AnyModuleName
+ 
+ # Not in use if share_extension == CPAN::Uploader. Usage:
+ # share_extension-&gt;upload_file($dist_file, share_params);
+ share_params: [ { answer: 42 } ]</pre>
+<p>All config params are optional, since <code>mypp</code> will probably figure out the
+information for you.</p>
+
 <h2><a name="attributes">Attributes</a></h1>
 <h3><a name="config">config</a></h2>
 <p>Holds the config from <code>mypp.yml</code> or <code>MYPP_CONFIG</code> environment variable.</p>
@@ -251,7 +259,7 @@ pushed to the currently active branch.</p>
 <h2><a name="see_also">See also</a></h1>
 <p><a href="http://search.cpan.org/dist/App-Cpanminus">the App::Cpanminus manpage</a>,
 <a href="http://search.cpan.org/dist/Dist-Zilla">the Dist::Zilla manpage</a>,
-<a href="http://jhthorsen.github.com/app-mypp">http://jhthorsen.github.com/app-mypp</a>.</p>
+<a href="http://github.com/jhthorsen/app-mypp">http://github.com/jhthorsen/app-mypp</a>.</p>
 <h2><a name="bugs">Bugs</a></h1>
 <p>Report bugs and issues at <a href="http://github.com/jhthorsen/app-mypp/issues">http://github.com/jhthorsen/app-mypp/issues</a>.</p>
 <h2><a name="copyright___license">Copyright &amp; license</a></h1>
