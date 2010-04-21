@@ -1,5 +1,8 @@
 Revision history for App-Mypp
 
+0.04
+       * Add --version support
+
 0.04     Thu Apr 22 00:15:05 CEST 2010
        * Fix test environment
        * Fix git commit message

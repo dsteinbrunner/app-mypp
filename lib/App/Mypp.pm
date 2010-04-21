@@ -48,6 +48,9 @@ anything, so 1) it just works 2) it might not work as you want it to.
  -makefile
   * Create a Makefile.PL from plain guesswork
 
+ -version
+  * Display the version number for for mypp
+
  -man
   * Display manual for mypp
 
