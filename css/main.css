@@ -92,6 +92,15 @@ pre {
     overflow: hidden;
 }
 
+#disqus_thread {
+    border-top: 1px solid #48a;
+    margin-top: 3em;
+}
+
+#disqus_thread #dsq-post-add-iframe {
+    overflow: hidden;
+}
+
 @media print {
     #container {
         margin: 0;
