@@ -4,7 +4,7 @@ use Cwd;
 use File::Basename;
 use File::Find;
 use YAML::Tiny;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
@@ -300,6 +300,7 @@ eval "__EVAL__::$1;" or warn "$1 => $@";
 }
 }
 for my $module (@$modules) {
+local $SIG{'__WARN__'} = sub { print $_[0] unless($_[0] =~ /\sredefined\sat/)};
 eval "require $module";
 my $version = $self->_version_from_module($module) or next;
 $requires->{$module} = $version;
@@ -310,7 +311,7 @@ sub manifest {
 my $self = shift;
 open my $SKIP, '>', 'MANIFEST.SKIP' or die "Write 'MANIFEST.SKIP': $!\n";
 print $SKIP "$_\n" for qw(
-^dperl.yml
+^mypp.yml
 .git
 \.old
 \.swp
@@ -442,7 +443,7 @@ print '
 }sub _vsystem {
 shift; # shift off class/object
 print "\$ @_\n" unless $SILENT;
-system @_;
+return $SILENT ? system "@_ 1>/dev/null 2>/dev/null" : system @_;
 }
 sub _filename_to_module {
 local $_ = $_[1];
