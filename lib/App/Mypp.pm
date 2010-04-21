@@ -350,6 +350,22 @@ _from_config share_params => sub {
     return;
 };
 
+
+_attr _eval_package_requires => sub {
+    eval q(package __EVAL__;
+        no warnings "redefine";
+        our @REQUIRES;
+        sub use { push @REQUIRES, @_ }
+        sub require { push @REQUIRES, @_ }
+        sub base { push @REQUIRES, @_ }
+        sub extends { push @REQUIRES, @_ }
+        sub with { push @REQUIRES, @_ }
+        1;
+    ) or die $@;
+
+    return \@__EVAL__::REQUIRES;
+};
+
 =head1 METHODS
 
 =head2 new
@@ -473,6 +489,20 @@ sub makefile {
     printf $MAKEFILE "name q(%s);\n", $self->name;
     printf $MAKEFILE "all_from q(%s);\n", $self->top_module;
 
+    if(%requires = $self->requires('lib')) {
+        print $MAKEFILE "\n";
+    }
+    for my $name (sort keys %requires) {
+        printf $MAKEFILE "requires q(%s) => %s;\n", $name, $requires{$name};
+    }
+
+    if(%requires = $self->requires('t')) {
+        print $MAKEFILE "\n";
+    }
+    for my $name (sort keys %requires) {
+        printf $MAKEFILE "test_requires q(%s) => %s;\n", $name, $requires{$name};
+    }
+
     $repo = (qx/git remote show -n origin/ =~ /URL: (.*)$/m)[0] || 'git://github.com/';
     $repo =~ s#^[^:]+:#git://github.com/#;
 
@@ -485,6 +515,113 @@ sub makefile {
     print $MAKEFILE "WriteAll;\n";
 
     print "Wrote $MAKEFILE_FILENAME\n" unless $SILENT;
+
+    return 1;
+}
+
+=head2 requires(lib|t)
+
+Will search for required modules in either the C<lib/> or C<t/> directory.
+
+=cut
+
+sub requires {
+    my $self = shift;
+    my $dir = shift;
+    my $prefix = $self->top_module_name;
+    my %requires;
+
+    local @INC = ('lib', @INC);
+
+    finddepth({
+        no_chdir => 1,
+        wanted => sub {
+            return if(!-f $_);
+            return if(/\.swp/);
+            return $self->_pm_requires($_ => \%requires) if(/\.pm$/);
+            return $self->_script_requires($_ => \%requires);
+        },
+    }, $dir);
+
+    for my $module (keys %requires) {
+        delete $requires{$module} if($module =~ /^$prefix/);
+    }
+
+    return %requires if(wantarray);
+    return \%requires;
+}
+
+sub _pm_requires {
+    my $self = shift;
+    my $file = shift;
+    my $requires = shift;
+    my $required_module = $self->_filename_to_module($file);
+    my @modules;
+
+    {
+        local $SIG{'__WARN__'} = sub { print $_[0] unless($_[0] =~ /\sredefined\sat/)};
+        local @INC = (sub {
+            my $module = $self->_filename_to_module(pop);
+            push @modules, $module if(caller(0) eq $required_module);
+        }, @INC);
+
+        require $file or warn $@;
+        return if($@);
+    }
+
+    if(my $meta = eval "$required_module\->meta") {
+        if($meta->isa('Class::MOP::Class')) {
+            push @modules, $meta->superclasses, map { $_->name } @{ $meta->roles };
+        }
+        else {
+            push @modules, map { $_->name } @{ $meta->get_roles };
+        }
+    }
+    else {
+        push @modules, eval "\@$required_module\::ISA";
+    }
+
+    for my $module (@modules) {
+        my $version = $self->_version_from_module($module) or next;
+        $requires->{$module} = $version;
+    }
+
+    return 1;
+}
+
+sub _script_requires {
+    my $self = shift;
+    my $file = shift;
+    my $requires = shift;
+    my $modules = $self->_eval_package_requires;
+
+    open my $FH, '<', $file or die "Read $file: $!\n";
+
+    local @$modules = ();
+
+    while(<$FH>) {
+        if(/^\s*use \s ([A-Z]\S+) ;/x) {
+            eval "__EVAL__::use('$1');" or warn "$1 => $@";
+        }
+        elsif(/^\s*require \s ([A-Z]\S+) ;/x) {
+            eval "__EVAL__::require('$1');" or warn "$1 => $@";
+        }
+        elsif(/^\s*use \s (base .*) ;/x) {
+            eval "__EVAL__::$1;" or warn "$1 => $@";
+        }
+        elsif(/^\s*(extends [\(\s] .*)/x) {
+            eval "__EVAL__::$1;" or warn "$1 => $@";
+        }
+        elsif(/^\s*(with [\(\s] .*)/x) {
+            eval "__EVAL__::$1;" or warn "$1 => $@";
+        }
+    }
+
+    for my $module (@$modules) {
+        eval "require $module";
+        my $version = $self->_version_from_module($module) or next;
+        $requires->{$module} = $version;
+    }
 
     return 1;
 }
@@ -696,6 +833,18 @@ sub _filename_to_module {
     s,^/?lib/,,g;
     s,/,::,g;
     return $_;
+}
+
+sub _version_from_module {
+    my $self = shift;
+    my $module = shift;
+
+    while($module) {
+        return $_ if($_ = eval "\$$module\::VERSION");
+        $module =~ s/::\w+$// or last;
+    }
+
+    return 0;
 }
 
 =head1 SEE ALSO
