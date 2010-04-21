@@ -1,5 +1,5 @@
 body, input, select, textarea, td {
-    font-size: 10pt;
+    font-size: 11pt;
     font-weight: normal;
     font-family: arial, sans-serif;
     color: #000;
@@ -37,15 +37,15 @@ h1 a, h2 a, h3 a {
 }
 
 h1 {
-    font-size: 2.0em;
+    font-size: 1.8em;
 }
 
 h2 {
-    font-size: 1.6em;
+    font-size: 1.3em;
 }
 
 h3 {
-    font-size: 1.3em;
+    font-size: 1.1em;
 }
 
 code, pre {
