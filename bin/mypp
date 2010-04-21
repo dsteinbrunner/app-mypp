@@ -64,7 +64,7 @@ elsif($app->can($method)) {
 }
 elsif($action =~ /^-*man$/i) {
     if($0 eq '-') {
-        print "Read manual online: http://jhthorsen.github.com/mypp\n"
+        print "Read manual online: http://jhthorsen.github.com/app-mypp\n"
     }
     else {
         exec perldoc => $0;
