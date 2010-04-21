@@ -498,10 +498,7 @@ Will create MANIFEST and MANIFEST.SKIP.
 sub manifest {
     my $self = shift;
 
-    $self->make('manifest') and die "Execute 'make manifest' failed\n";
-
     open my $SKIP, '>', 'MANIFEST.SKIP' or die "Write 'MANIFEST.SKIP': $!\n";
-
     print $SKIP "$_\n" for qw(
                            ^dperl.yml
                            .git
@@ -512,6 +509,8 @@ sub manifest {
                            ^Makefile$
                            ^MANIFEST.*
                        ), $self->name;
+
+    $self->make('manifest') and die "Execute 'make manifest' failed\n";
 
     return 1;
 }
