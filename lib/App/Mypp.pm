@@ -676,7 +676,7 @@ Will commit with the text from Changes and create a tag
 
 sub tag_and_commit {
     my $self = shift;
-    $self->_vsystem(git => commit => -a => -m => $self->changes->{'latest'});
+    $self->_vsystem(git => commit => -a => -m => $self->changes->{'text'});
     $self->_vsystem(git => tag => $self->changes->{'version'});
     return 1;
 }
