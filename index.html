@@ -20,6 +20,7 @@ title: App::Mypp
 <p><a name="__index__"></a></p>
 <ul>
 
+	<li><a href="#features">Features</a></li>
 	<li><a href="#synopsis">Synopsis</a></li>
 	<li><a href="#sample_config_file">Sample config file</a></li>
 	<li><a href="#sharing_the_module">Sharing the module</a></li>
@@ -64,6 +65,27 @@ title: App::Mypp
 </ul>
 </div>
 <!-- INDEX END -->
+
+<h3 id="features">Features</h3>
+<ul>
+    <li>
+        Generates <a href="http://search.cpan.org/dist/Module-Install">Module::Install</a> styled Makefile.PL
+        (..and no - you cannot choose any other) from guesswork and black magic
+    </li>
+    <li>
+        Will insert release date in Changes file, at the first line containing
+        a proper formatted version number, and nothing more.
+    </li>
+    <li>Generates load tests and pod tests</li>
+    <li>Generates MANIFEST and MANIFEST.SKIP</li>
+    <li>Generates README from top module</li>
+    <li>Update VERSION in top module</li>
+    <li>Create a dist, without weird files present</li>
+    <li>Upload the dist to cpan or to another custom location</li>
+    <li>Commit and tag the release and pushes the changes to "origin"</li>
+    <li>Build and test the project</li>
+    <li>Can properly clean up <i>all</i> build files</li>
+</ul>
 
 <h2><a name="synopsis">Synopsis</a></h1>
 <pre>
