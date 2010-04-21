@@ -57,11 +57,11 @@ title: App::Mypp
 
 <h2 id="introduction">Introduction</h2>
 <p>
-    <code>dperl</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym>
+    <code>mypp</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym>
     getting tired of doing the same stuff - or rather forgetting to do the same stuff for
-    each of my perl projects. dperl does <i>not</i> feature the same things
+    each of my perl projects. mypp does <i>not</i> feature the same things
     as <a href="http://search.cpan.org/dist/Dist-Zilla">Dist::Zilla</a>, but
-    I would like to think of dperl VS dzil as <a href="http://search.cpan.org/dist/CPAN">cpan</a>
+    I would like to think of mypp VS dzil as <a href="http://search.cpan.org/dist/CPAN">cpan</a>
     vs <a href="http://search.cpan.org/dist/App-cpanminus">cpanm</a> - or at
     least that is what I'm aming for (!)
 </p>
@@ -128,6 +128,13 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
  -man
   * Display manual for mypp
 </pre>
+<p>
+    It is also possible to call <code>mypp</code> with any of the
+    <a href="#methods">attribute</a> or <a href="#methods">method</a>
+    names as argument. The result will be a dump of the data the
+    method/attribute holds + any action the method might do.
+</p>
+
 <h2><a name="sharing_the_module">Sharing the module</a></h1>
 <p>By default the <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a> module is used to upload the module to CPAN.
 This module will use the information from <code>$HOME/.pause</code> to find login
