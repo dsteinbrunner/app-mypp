@@ -62,7 +62,7 @@ pre {
 
 #container {
     background: #f3f3ff;
-    margin: 2em 5em;
+    margin: 2em auto;
     padding: 1em;
     width: 48em;
 }
