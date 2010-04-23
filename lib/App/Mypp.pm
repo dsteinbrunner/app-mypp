@@ -122,7 +122,6 @@ use warnings;
 use Cwd;
 use File::Basename;
 use File::Find;
-use YAML::Tiny;
 
 our $VERSION = '0.05_01';
 our $SILENT = $ENV{'SILENT'} || 0;
@@ -165,7 +164,24 @@ Holds the config from C<mypp.yml> or C<MYPP_CONFIG> environment variable.
 
 _attr config => sub {
     my $self = shift;
-    my $config = YAML::Tiny->read( $ENV{'MYPP_CONFIG'} || 'mypp.yml' );
+    my $file = $ENV{'MYPP_CONFIG'} || 'mypp.yml';
+    my $config;
+
+    return {} unless(-e $file);
+
+    eval "use AML::Tiny; 1;" or do {
+        die <<"ERROR";
+
+YAML::Tiny is not installed, meaning '$file' will not be read.
+Use one of the commands below to install it:
+
+\$ aptitude install libyaml-tiny-perl
+\$ wget -q http://xrl.us/cpanm -O - | perl - YAML::Tiny
+
+ERROR
+    };
+
+    $config = YAML::Tiny->read($file);
 
     return $config->[0] if($config and $config->[0]);
     return {};
