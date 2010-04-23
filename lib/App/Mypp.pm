@@ -758,6 +758,7 @@ Will create C<t/99-pod-coverage.t> and C<t/99-pod.t>.
 sub t_pod {
     my $self = shift;
 
+    mkdir 't';
     open my $POD_COVERAGE, '>', 't/99-pod-coverage.t' or die "Write 't/99-pod-coverage.t': $!\n";
 
     print $POD_COVERAGE $self->_t_header;
@@ -798,6 +799,7 @@ sub t_load {
         push @modules, $File::Find::name;
     }, 'lib');
 
+    mkdir 't';
     open my $USE_OK, '>', 't/00-load.t' or die "Write 't/00-load.t': $!\n";
 
     print $USE_OK $self->_t_header;

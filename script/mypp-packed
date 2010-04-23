@@ -3,8 +3,7 @@ package App::Mypp;
 use Cwd;
 use File::Basename;
 use File::Find;
-use YAML::Tiny;
-our $VERSION = '0.05';
+our $VERSION = '0.05_01';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
@@ -28,7 +27,18 @@ return $self->{$name} ||= $self->$sub(@_);
 }
 _attr config => sub {
 my $self = shift;
-my $config = YAML::Tiny->read( $ENV{'MYPP_CONFIG'} || 'mypp.yml' );
+my $file = $ENV{'MYPP_CONFIG'} || 'mypp.yml';
+my $config;
+return {} unless(-e $file);
+eval "use AML::Tiny; 1;" or do {
+die <<"ERROR";
+YAML::Tiny is not installed, meaning '$file' will not be read.
+Use one of the commands below to install it:
+\$ aptitude install libyaml-tiny-perl
+\$ wget -q http://xrl.us/cpanm -O - | perl - YAML::Tiny
+ERROR
+};
+$config = YAML::Tiny->read($file);
 return $config->[0] if($config and $config->[0]);
 return {};
 };
@@ -363,6 +373,7 @@ return 1;
 }
 sub t_pod {
 my $self = shift;
+mkdir 't';
 open my $POD_COVERAGE, '>', 't/99-pod-coverage.t' or die "Write 't/99-pod-coverage.t': $!\n";
 print $POD_COVERAGE $self->_t_header;
 print $POD_COVERAGE <<'TEST';
@@ -389,6 +400,7 @@ $File::Find::name =~ s,lib/?,,;
 $File::Find::name =~ s,/,::,g;
 push @modules, $File::Find::name;
 }, 'lib');
+mkdir 't';
 open my $USE_OK, '>', 't/00-load.t' or die "Write 't/00-load.t': $!\n";
 print $USE_OK $self->_t_header;
 printf $USE_OK "plan tests => %i;\n", int @modules;

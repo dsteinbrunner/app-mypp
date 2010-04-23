@@ -2,6 +2,7 @@ Revision history for App-Mypp
 
 0.06
        * Change YAML::Tiny is only required if config file exists
+       * Fix "t" directory will be create unless exists
 
 0.05_01  Fri Apr 23 13:41:55 CEST 2010
        * Fix requires in Makefile.PL
