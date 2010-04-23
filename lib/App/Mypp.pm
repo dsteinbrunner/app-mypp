@@ -576,18 +576,18 @@ sub _pm_requires {
 
     if(my $meta = eval "$required_module\->meta") {
         if($meta->isa('Class::MOP::Class')) {
-            push @modules, $meta->superclasses, map { $_->name } @{ $meta->roles };
+            push @modules, $meta->superclasses, map { split /\|/, $_->name } @{ $meta->roles };
         }
         else {
-            push @modules, map { $_->name } @{ $meta->get_roles };
+            push @modules, map { split /\|/, $_->name } @{ $meta->get_roles };
         }
     }
     else {
         push @modules, eval "\@$required_module\::ISA";
     }
 
-    for my $module (@modules) {
-        my $version = $self->_version_from_module($module) or next;
+    for my $m (@modules) {
+        my($module, $version) = $self->_version_from_module($m) or next;
         $requires->{$module} = $version;
     }
 
@@ -622,10 +622,10 @@ sub _script_requires {
         }
     }
 
-    for my $module (@$modules) {
+    for my $m (@$modules) {
         local $SIG{'__WARN__'} = sub { print $_[0] unless($_[0] =~ /\sredefined\sat/)};
-        eval "require $module";
-        my $version = $self->_version_from_module($module) or next;
+        eval "use $m (); 1" or warn $@;
+        my($module, $version) = $self->_version_from_module($m) or next;
         $requires->{$module} = $version;
     }
 
@@ -846,11 +846,13 @@ sub _version_from_module {
     my $module = shift;
 
     while($module) {
-        return $_ if($_ = eval "\$$module\::VERSION");
+        if(my $version = eval "\$$module\::VERSION") {
+            return($module, $version);
+        }
         $module =~ s/::\w+$// or last;
     }
 
-    return 0;
+    return;
 }
 
 =head1 SEE ALSO
