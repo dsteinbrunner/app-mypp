@@ -1,6 +1,6 @@
 Revision history for App-Mypp
 
-0.04
+0.04     Fri Apr 23 12:02:13 CEST 2010
        * Fix _version_from_module() returns module name and version
        * Fix split result from meta->roles and meta->get_roles
          - might return "ModuleOne|ModuleTwo"

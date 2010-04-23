@@ -42,6 +42,9 @@ SYNOPSIS
      -makefile
       * Create a Makefile.PL from plain guesswork
 
+     -version
+      * Display the version number for for mypp
+
      -man
       * Display manual for mypp
 
