@@ -1,6 +1,6 @@
 Revision history for App-Mypp
 
-0.05_01
+0.05_01  Fri Apr 23 13:41:55 CEST 2010
        * Fix requires in Makefile.PL
        * Change homepage in Makefile.PL
 
