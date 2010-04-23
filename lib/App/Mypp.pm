@@ -570,7 +570,7 @@ sub _pm_requires {
             push @modules, $module if(caller(0) eq $required_module);
         }, @INC);
 
-        require $file or warn $@;
+        eval "use $required_module (); 1" or warn $@;
         return if($@);
     }
 
