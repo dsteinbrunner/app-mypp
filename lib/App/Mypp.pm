@@ -169,7 +169,7 @@ _attr config => sub {
 
     return {} unless(-e $file);
 
-    eval "use AML::Tiny; 1;" or do {
+    eval "use YAML::Tiny; 1;" or do {
         die <<"ERROR";
 
 YAML::Tiny is not installed, meaning '$file' will not be read.
