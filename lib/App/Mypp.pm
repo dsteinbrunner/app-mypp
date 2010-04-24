@@ -437,13 +437,18 @@ sub update_version_info {
     my $version = $self->changes->{'version'};
     my $top_module_text;
 
-    open my $MODULE, '+<', $top_module or die "Read/write '$top_module': $!\n";
-    { local $/; $top_module_text = <$MODULE> };
+    {
+        open my $MODULE, '<', $top_module or die "Read '$top_module': $!\n";
+        { local $/; $top_module_text = <$MODULE> };
+    }
+
     $top_module_text =~ s/=head1 VERSION.*?\n=/=head1 VERSION\n\n$version\n\n=/s;
     $top_module_text =~ s/^((?:our)?\s*\$VERSION)\s*=.*$/$1 = '$version';/m;
 
-    seek $MODULE, 0, 0;
-    print $MODULE $top_module_text;
+    {
+        open my $MODULE, '>', $top_module or die "Write '$top_module': $!\n";
+        print $MODULE $top_module_text;
+    }
 
     print "Update version in '$top_module' to $version\n" unless $SILENT;
 
