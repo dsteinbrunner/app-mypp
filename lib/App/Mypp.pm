@@ -707,7 +707,7 @@ sub tag_and_commit {
 
 =head2 share_via_git
 
-Uses git and push changes and tags to "origin". The changes are
+Uses git to push changes and tags to "origin". The changes are
 pushed to the currently active branch.
 
 =cut
