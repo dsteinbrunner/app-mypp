@@ -17,6 +17,14 @@ like to think of mypp vs dzil as cpanm vs CPAN - or at least that
 is what I'm aiming for. (!) What I don't want to do is configure
 anything, so 1) it should just work 2) it might not work as you want it to.
 
+Want to try it out? Run the line below in your favourite terminal:
+
+ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - | perl -
+
+Running that line will start the experimental code from github - meaning
+the latest release. Run at own risk - and don't forget to put your files
+under version control first!
+
 =head1 SYNOPSIS
 
  Usage mypp [option]
