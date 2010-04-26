@@ -42,7 +42,7 @@ wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - 
         (..and no - you cannot choose any other) from guesswork and black magic
     </li>
     <li>
-        Will insert release date in Changes file, at the first line containing
+        Insert release date in Changes file, at the first line containing
         a proper formatted version number, and nothing more.
     </li>
     <li>Generates load tests and pod tests</li>
@@ -196,13 +196,13 @@ used as an argument to <a href="#share_extension">share_extension</a>'s <code>up
 
 <h2 id="methods">Methods</h2>
 <h3 id="new">new</h3>
-<p>Will create a new object</p>
+<p>Create a new object</p>
 <h3 id="timestamp_to_changes">timestamp_to_changes</h3>
 <p>Inserts a timestamp in Changes on the first line looking like this:</p>
 <pre>
 ^\d+\.[\d_]+\s*$</pre>
 <h3 id="update_version_info">update_version_info</h3>
-<p>Will update version in top module, with the latest version from <code>Changes</code>.</p>
+<p>Updates version in top module, with the latest version from <code>Changes</code>.</p>
 <h3 id="generate_readme">generate_readme</h3>
 <p>Generates a <code>README</code> file from the plain old documentation in top
 module.</p>
