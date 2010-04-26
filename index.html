@@ -21,13 +21,11 @@ title: App::Mypp
 
 <h2 id="introduction">Introduction</h2>
 <p>
-    <code>mypp</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym>
-    getting tired of doing the same stuff - or rather forgetting to do the same stuff for
-    each of my perl projects. mypp does <i>not</i> feature the same things
-    as <a href="http://search.cpan.org/dist/Dist-Zilla">Dist::Zilla</a>, but
-    I would like to think of mypp VS dzil as <a href="http://search.cpan.org/dist/CPAN">cpan</a>
-    vs <a href="http://search.cpan.org/dist/App-cpanminus">cpanm</a> - or at
-    least that is what I'm aming for (!)
+    <code>mypp</code> is a result of <acronym title="jhthorsen@cpan.org">me</acronym> getting tired of doing the same stuff - or
+    rather forgetting to do the same stuff - for each of my Perl projects.
+    <code>mypp</code> does not feature the same things as <a href="http://search.cpan.org/dist/Dist-Zilla">Dist::Zilla</a>, but I would
+    like to think of <code>mypp</code> vs dzil as <a href="http://search.cpan.org/dist/App-cpanminus">cpanm</a> vs <a href="http://search.cpan.org/dist/CPAN">CPAN</a> - or at least that
+    is what I'm aiming for (!)
 </p>
 <p>
     Want to try it out? Run the line below in your favourite
@@ -106,14 +104,14 @@ information:</p>
 <pre>
 user your_pause_username
 password your_secret_pause_password</pre>
-<p>It will also use git to push changes and tag a new release:</p>
+<p>It also uses git to push changes and tag a new release:</p>
 <pre>
 git commit -a -m &quot;$message_from_changes_file&quot;
 git tag &quot;$latest_version_in_changes_file&quot;
 git push origin $current_branch
 git push --tags origin</pre>
-<p>The commit and tag is done when on <code>-dist</code>, while pushing the changes to
-origin is done on <code>-share</code>.</p>
+<p>The commit and tagging is done with <code>-dist</code>, while pushing the changes to
+origin is done with <code>-share</code>.</p>
 
 <h2 id="changes_file">Changes file</h2>
 <p>The expected format in <code>Changes</code> is:</p>
@@ -128,7 +126,7 @@ Revision history for Foo-Bar
 0.01 Tue Apr 20 19:34:15 CEST 2010
  * First release
  * Add some feature</pre>
-<p><code>mypp</code> will automatically add the date before creating a dist.</p>
+<p><code>mypp</code> automatically adds the date before creating a dist.</p>
 
 <h2 id="sample_config_file">Sample config file</h2>
 <pre>
@@ -151,7 +149,7 @@ share_extension: AnyModuleName
 # Not in use if share_extension == CPAN::Uploader. Usage:
 # share_extension-&gt;upload_file($dist_file, share_params);
 share_params: [ { answer: 42 } ]</pre>
-<p>All config params are optional, since <code>mypp</code> will probably figure out the
+<p>All config params are optional, since <code>mypp</code> tries to figure out the
 information for you.</p>
 
 <h2 id="attributes">Attributes</h2>
@@ -159,7 +157,7 @@ information for you.</p>
 <p>Holds the config from <code>mypp.yml</code> or <code>MYPP_CONFIG</code> environment variable.</p>
 <h3 id="name">name</h3>
 <p>Holds the project name. The project name is extracted from the
-<a href="#top_module">top_module</a>, unless set in config file. Example: <code>foo-bar</code>.</p>
+<a href="#top_module">top_module</a>, unless set in the config file. Example: <code>foo-bar</code>.</p>
 <h3 id="top_module">top_module</h3>
 <p>Holds the top module location. This path is extracted from either
 <code>name</code> in config file or the basename of the project. Example value:
@@ -190,50 +188,51 @@ Example:</p>
 }</pre>
 <h3 id="share_extension">share_extension</h3>
 <p>Holds the classname of the module which should be used for sharing. This
-value can either come from config file, <code>MYPP_SHARE_MODULE</code> environment
-variable or fallback to <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a>.</p>
+value can either come from config file or the <code>MYPP_SHARE_MODULE</code> environment
+variable, or fallback to <a href="http://search.cpan.org/dist/CPAN-Uploader">the CPAN::Uploader manpage</a>.</p>
 <h3 id="share_params">share_params</h3>
-<p>This attribute must hold an array-ref, since it is deflated as a list when
-used as arguments to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
+<p>This attribute must hold an array-ref, since it is flattened into a list when
+used as an argument to <a href="#share_extension">share_extension</a>'s <code>upload_file()</code> method.</p>
 
 <h2 id="methods">Methods</h2>
 <h3 id="new">new</h3>
 <p>Will create a new object</p>
 <h3 id="timestamp_to_changes">timestamp_to_changes</h3>
-<p>Will insert a timestamp in Changes on the first line looking like this:</p>
+<p>Inserts a timestamp in Changes on the first line looking like this:</p>
 <pre>
 ^\d+\.[\d_]+\s*$</pre>
 <h3 id="update_version_info">update_version_info</h3>
 <p>Will update version in top module, with the latest version from <code>Changes</code>.</p>
 <h3 id="generate_readme">generate_readme</h3>
-<p>Will generate a <code>README</code> file from the plain old documentation in top
+<p>Generates a <code>README</code> file from the plain old documentation in top
 module.</p>
 <h3 id="clean">clean</h3>
-<p>Will remove all files which should not be part of your repo.</p>
+<p>Removes all files which should not be part of your repo.</p>
 <h3 id="makefile">makefile</h3>
-<p>Will create a Makefile.PL, unless it already exists.</p>
+<p>Creates a <code>Makefile.PL</code>, unless it already exists.</p>
 <h3 id="manifest">manifest</h3>
-<p>Will create MANIFEST and MANIFEST.SKIP.</p>
+<p>Creates <code>MANIFEST</code> and <code>MANIFEST.SKIP</code>.</p>
 <h3 id="make__what__">make($what)</h3>
-<p>Will create <code>Makefile.PL</code>, unless already exists, then run perl on the
+<p>Creates <code>Makefile.PL</code>, unless already exists, then run perl on the
 make script, and then execute <code>make $what</code>.</p>
 <h3 id="tag_and_commit">tag_and_commit</h3>
-<p>Will commit with the text from Changes and create a tag</p>
+<p>Commits with the text from <code>Changes</code> and create a tag</p>
 <h3 id="share_via_git">share_via_git</h3>
-<p>Will use git and push changes and tags to &quot;origin&quot;. The changes will be
+<p>Uses git and push changes and tags to &quot;origin&quot;. The changes are
 pushed to the currently active branch.</p>
 <h3 id="share_via_extension">share_via_extension</h3>
-<p>Will use <a href="#share_extension">share_extension</a> module and upload the dist file.</p>
+<p>Uses the <a href="#share_extension">share_extension</a> module and upload the dist file.</p>
 <h3 id="t_pod">t_pod</h3>
-<p>Will create <code>t/99-pod-coverage.t</code> and <code>t/99-pod.t</code>.</p>
+<p>Creates <code>t/99-pod-coverage.t</code> and <code>t/99-pod.t</code>.</p>
 <h3 id="t_load">t_load</h3>
-<p>Will create <code>t/00-load.t</code>.</p>
+<p>Creates <code>t/00-load.t</code>.</p>
 <h3 id="help">help</h3>
-<p>Will display <a href="#synopsis">SYNOPSIS</a> on STDOUT.</p>
+<p>Displays <a href="#synopsis">SYNOPSIS</a> on STDOUT.</p>
 
 <h2 id="see_also">See also</h2>
 <p><a href="http://search.cpan.org/dist/App-Cpanminus">the App::Cpanminus manpage</a>,
 <a href="http://search.cpan.org/dist/Dist-Zilla">the Dist::Zilla manpage</a>,
+<a href="http://search.cpan.org/dist/ShipIt">the ShipIt manpage</a>,
 <a href="http://github.com/jhthorsen/app-mypp">http://github.com/jhthorsen/app-mypp</a>.</p>
 
 <h2 id="bugs">Bugs</h2>
