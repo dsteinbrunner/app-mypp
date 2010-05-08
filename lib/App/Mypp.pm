@@ -6,7 +6,7 @@ App::Mypp - Maintain Your Perl Project
 
 =head1 VERSION
 
-0.06
+0.06_01
 
 =head1 DESCRIPTION
 
@@ -31,11 +31,11 @@ under version control first!
 
  -update
   * Update version information in main module
-  * Create/update t/00-load.t and t/99-pod*t
+  * Create/update t/00-load.t and t/00-pod*t
   * Create/update README
 
  -test
-  * Create/update t/00-load.t and t/99-pod*t
+  * Create/update t/00-load.t and t/00-pod*t
   * Test the project
 
  -build
@@ -130,7 +130,7 @@ use Cwd;
 use File::Basename;
 use File::Find;
 
-our $VERSION = '0.06';
+our $VERSION = '0.06_01';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
@@ -355,7 +355,7 @@ variable, or fallback to L<CPAN::Uploader>.
 
 =cut
 
-_from_config share_extension => sub {
+_attr share_extension => sub {
     my $self = shift;
 
     return $ENV{'MYPP_SHARE_MODULE'} if($ENV{'MYPP_SHARE_MODULE'});
@@ -371,11 +371,32 @@ used as an argument to L</share_extension>'s C<upload_file()> method.
 =cut
 
 _from_config share_params => sub {
-    my $self = shift;
-    return $self->config->{'share_params'} if($self->config->{'share_params'});
     return;
 };
 
+=head2 perl5lib
+
+This attribute holds an array-ref of optional C<PERL5LIB> directories, which
+should be included in generated files and prepended to L<@INC> while
+executing this script.
+
+=cut
+
+_attr perl5lib => sub {
+    my $self = shift;
+    my $inc = $self->config->{'perl5lib'};
+
+    if(!$inc) {
+        $inc = [];
+    }
+    elsif(ref $inc ne 'ARRAY') {
+        $inc = [ split /:/, $inc ];
+    }
+
+    push @$inc, split /:/, $ENV{'PERL5LIB'} if($ENV{'PERL5LIB'});
+
+    return $inc;
+};
 
 _attr _eval_package_requires => sub {
     eval q(package __EVAL__;
@@ -401,7 +422,13 @@ _attr _eval_package_requires => sub {
 =cut
 
 sub new {
-    return bless {}, __PACKAGE__;
+    my $class = shift;
+    my $self = bless {}, $class;
+
+    $ENV{'PERL5LIB'} = join ':', @{ $self->perl5lib };
+    unshift @INC, @{ $self->perl5lib };
+
+    return $self;
 }
 
 =head2 timestamp_to_changes
@@ -495,6 +522,7 @@ sub clean {
             Makefile.old
             MANIFEST*
             META.yml
+            MYMETA.yml
         ),
     ));
 
@@ -763,32 +791,35 @@ sub share_via_extension {
 
 =head2 t_pod
 
-Creates C<t/99-pod-coverage.t> and C<t/99-pod.t>.
+Create/update C<t/99-pod-coverage.t> and C<t/99-pod.t> or
+C<t/00-pod-coverage.t> and C<t/00-pod.t>.
+
+(Doesn't make any sense to wait with the pod tests to step 99)
 
 =cut
 
 sub t_pod {
     my $self = shift;
+    my $coverage = -e 't/99-pod-coverage.t' ? 't/99-pod-coverage.t' : 't/00-pod-coverage.t';
+    my $pod = -e 't/99-pod.t' ? 't/99-pod.t' : 't/00-pod.t';
 
     mkdir 't';
-    open my $POD_COVERAGE, '>', 't/99-pod-coverage.t' or die "Write 't/99-pod-coverage.t': $!\n";
 
+    open my $POD_COVERAGE, '>', $coverage or die "Write '$coverage': $!\n";
     print $POD_COVERAGE $self->_t_header;
     print $POD_COVERAGE <<'TEST';
 eval 'use Test::Pod::Coverage; 1' or plan skip_all => 'Test::Pod::Coverage required';
 all_pod_coverage_ok();
 TEST
+    print "Wrote t/$coverage\n" unless $SILENT;
 
-    print "Wrote t/99-pod-coverage.t\n" unless $SILENT;
-
-    open my $POD, '>', 't/99-pod.t' or die "Write 't/99-pod.t': $!\n";
+    open my $POD, '>', $pod or die "Write '$pod': $!\n";
     print $POD $self->_t_header;
     print $POD <<'TEST';
 eval 'use Test::Pod; 1' or plan skip_all => 'Test::Pod required';
 all_pod_files_ok();
 TEST
-
-    print "Wrote t/99-pod.t\n" unless $SILENT;
+    print "Wrote $pod\n" unless $SILENT;
 
     return 1;
 }
@@ -827,9 +858,12 @@ sub t_load {
 }
 
 sub _t_header {
-    return <<'HEADER';
-#!/usr/bin/perl
-use lib qw(lib);
+    my $self = shift;
+    my @lib = ('lib', @{ $self->perl5lib });
+
+    return <<"HEADER";
+#!/usr/bin/env perl
+use lib qw(@lib);
 use Test::More;
 HEADER
 }
