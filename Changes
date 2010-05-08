@@ -1,6 +1,6 @@
 Revision history for App-Mypp
 
-0.06_01
+0.07     Sun May  9 00:26:14 CEST 2010
        * Add perl5lib attribute from config. Default to PERL5LIB and
          is included in "use lib ..." when generating tests
        * Add doc patch from chocolateboy

@@ -6,7 +6,7 @@ App::Mypp - Maintain Your Perl Project
 
 =head1 VERSION
 
-0.06_01
+0.07
 
 =head1 DESCRIPTION
 
@@ -130,7 +130,7 @@ use Cwd;
 use File::Basename;
 use File::Find;
 
-our $VERSION = '0.06_01';
+our $VERSION = '0.07';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
