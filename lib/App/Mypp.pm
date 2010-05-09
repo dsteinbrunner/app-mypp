@@ -811,7 +811,7 @@ sub t_pod {
 eval 'use Test::Pod::Coverage; 1' or plan skip_all => 'Test::Pod::Coverage required';
 all_pod_coverage_ok();
 TEST
-    print "Wrote t/$coverage\n" unless $SILENT;
+    print "Wrote $coverage\n" unless $SILENT;
 
     open my $POD, '>', $pod or die "Write '$pod': $!\n";
     print $POD $self->_t_header;

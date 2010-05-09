@@ -1,5 +1,8 @@
 Revision history for App-Mypp
 
+0.07_01
+       * Fix typo "Wrote t/t/99-pod-coverage.t"
+
 0.07     Sun May  9 00:26:14 CEST 2010
        * Add perl5lib attribute from config. Default to PERL5LIB and
          is included in "use lib ..." when generating tests
