@@ -1,5 +1,8 @@
 Revision history for App-Mypp
 
+0.08
+       * Add Changes will be generated unless already exists
+
 0.07_01
        * Fix typo "Wrote t/t/99-pod-coverage.t"
 

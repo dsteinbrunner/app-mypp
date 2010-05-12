@@ -54,7 +54,10 @@ under version control first!
     in the project repo
 
  -makefile
-  * Create a Makefile.PL from plain guesswork
+  * Create "Makefile.PL" from plain guesswork
+
+ -changes
+  * Create "Changes" from template
 
  -version
   * Display the version number for for mypp
@@ -278,6 +281,13 @@ Holds the latest information from C<Changes>. Example:
 _attr changes => sub {
     my $self = shift;
     my($text, $version);
+
+    unless(-e $CHANGES_FILENAME) {
+        open my $CHANGES, '>', $CHANGES_FILENAME or die "Write '$CHANGES_FILENAME': $!\n";
+        printf $CHANGES "Revision history for %s\n\n0.00\n", $self->name;
+        print $CHANGES " " x 7, "* Init repo\n\n";
+        print "Wrote $CHANGES_FILENAME\n";
+    }
 
     open my $CHANGES, '<', $CHANGES_FILENAME or die "Read '$CHANGES_FILENAME': $!\n";
 
