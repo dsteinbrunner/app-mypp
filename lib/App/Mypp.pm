@@ -407,7 +407,7 @@ _attr perl5lib => sub {
     }
 
     if($ENV{'PERL5LIB'}) {
-        warn 'PERL5LIB environment variable is not included when setting perl5lib';
+        warn 'perl5lib attribute is not set using PERL5LIB environment variable'
     }
 
     return $inc;
