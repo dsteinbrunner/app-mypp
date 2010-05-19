@@ -386,9 +386,12 @@ _from_config share_params => sub {
 
 =head2 perl5lib
 
-This attribute holds an array-ref of optional C<PERL5LIB> directories, which
-should be included in generated files and prepended to L<@INC> while
-executing this script.
+This attribute holds an array-ref of optional perl library search
+directories. This attribute is used when setting up C<use lib> in
+generated files and will also be unshifted on C<@INC> in L</new()>
+
+NOTE! This was set by C<PERL5LIB> environment variable in prior versions,
+but this is now deprecated.
 
 =cut
 
@@ -403,7 +406,9 @@ _attr perl5lib => sub {
         $inc = [ split /:/, $inc ];
     }
 
-    push @$inc, split /:/, $ENV{'PERL5LIB'} if($ENV{'PERL5LIB'});
+    if($ENV{'PERL5LIB'}) {
+        warn 'PERL5LIB environment variable is not included when setting perl5lib';
+    }
 
     return $inc;
 };
@@ -429,13 +434,17 @@ _attr _eval_package_requires => sub {
 
  $self = App::Mypp->new;
 
+This is the object constructor.
+
+Will use L</perl5lib> to set up C<@INC>, to search for libraries in
+optional directories.
+
 =cut
 
 sub new {
     my $class = shift;
     my $self = bless {}, $class;
 
-    $ENV{'PERL5LIB'} = join ':', @{ $self->perl5lib };
     unshift @INC, @{ $self->perl5lib };
 
     return $self;
