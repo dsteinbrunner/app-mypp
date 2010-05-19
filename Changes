@@ -1,6 +1,6 @@
 Revision history for App-Mypp
 
-0.08
+0.08     Wed May 19 19:03:46 CEST 2010
        * Add Changes will be generated unless already exists
        * Deprecated setting perl5lib attribute from the PERL5LIB
          environment variable.
