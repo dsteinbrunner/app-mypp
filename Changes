@@ -1,5 +1,7 @@
 Revision history for App-Mypp
 
+       * Add also_private => [A-Z_]+ to all_pod_coverage_ok()
+
 0.08     Wed May 19 19:03:46 CEST 2010
        * Add Changes will be generated unless already exists
        * Deprecated setting perl5lib attribute from the PERL5LIB
