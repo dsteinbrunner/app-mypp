@@ -642,7 +642,7 @@ sub _pm_requires {
         local $SIG{'__WARN__'} = sub { print $_[0] unless($_[0] =~ /\sredefined\sat/)};
         local @INC = (sub {
             my $module = $self->_filename_to_module(pop);
-            push @modules, $module if(caller(0) eq $required_module);
+            push @modules, $module if(caller(0) =~ /^$required_module/);
         }, @INC);
 
         eval "use $required_module (); 1" or warn $@;
