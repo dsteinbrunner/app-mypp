@@ -133,7 +133,7 @@ use Cwd;
 use File::Basename;
 use File::Find;
 
-our $VERSION = '0.08';
+our $VERSION = eval '0.08';
 our $SILENT = $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
@@ -496,7 +496,7 @@ sub update_version_info {
     }
 
     $top_module_text =~ s/=head1 VERSION.*?\n=/=head1 VERSION\n\n$version\n\n=/s;
-    $top_module_text =~ s/^((?:our)?\s*\$VERSION)\s*=.*$/$1 = '$version';/m;
+    $top_module_text =~ s/^((?:our)?\s*\$VERSION)\s*=.*$/$1 = eval '$version';/m;
 
     {
         open my $MODULE, '>', $top_module or die "Write '$top_module': $!\n";
