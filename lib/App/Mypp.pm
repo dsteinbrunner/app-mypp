@@ -651,7 +651,8 @@ sub _pm_requires {
 
     if(my $meta = eval "$required_module\->meta") {
         if($meta->isa('Class::MOP::Class')) {
-            push @modules, $meta->superclasses, map { split /\|/, $_->name } @{ $meta->roles };
+            my $roles = $meta->can('roles') ? $meta->roles : [];
+            push @modules, $meta->superclasses, map { split /\|/, $_->name } @$roles;
         }
         else {
             push @modules, map { split /\|/, $_->name } @{ $meta->get_roles };
