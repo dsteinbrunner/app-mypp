@@ -1,0 +1,73 @@
+--- App::Mypp
+
+* What is it?
+* Why did I write it?
+* What can it do?
+* Example
+* Future plans..?
+
+--- What is it
+App::Mypp is a zeroconf alternative to Dist::Zilla. Mypp does not have the
+same features as distzilla, but I like to think of mypp vs dzil as
+cpanm vs CPAN - or at least that is what I'm aiming for.
+So this means that it is a tool which can auto-generate and maintain
+files for your distribution (such as t/foo, Changes, README), and also
+help you share a new release.
+
+NOTE: er dette etter dist-zilla talk'n?
+
+--- Why did I write it?
+I wrote mypp because I was pretty tired from forgetting the most basic
+tasks when releasing a module to cpan. Things like updating Changes and
+version numbers is probably what I forget the most often.
+
+--- What can it do?
+* timestamp_to_changes()
+ * Will add a timestamp after the latest version number in Changes
+* update_version_info()
+ * Will update main module with the latest version from Changes
+* generate_readme()
+ * Will create README from main module
+* manifest()
+ * Will create MAINIFEST and MANIFEST.SKIP with and alternative list
+* makefile()
+ * Based on Module::Install
+ * Autogenerate requires() list
+ * Add "catalyst;" when inside a catalyst project.
+ * Add meta info
+* t_foo()
+ * Creates 00-load.t, 00-pod.t, 00-pod-coverage.t
+* tag_and_commit()
+ * Creates a new tag+commit with the commit message from Changes
+* share_via_git() and share_via_extension()
+ * Uploads the new tag+commit to github and shares the tar.gz using
+   either CPAN::Upload or a custom module.
+* clean()
+ * "make clean" and more
+
+And it can be run from the Internet:
+* wget -q http://github.com/jhthorsen/app-mypp/raw/master/script/mypp-packed -O - | perl -
+* wget -q http://bit.ly/???? -O - | perl -
+
+Running the line above will start the experimental code from
+github - meaning the latest release. Run at own risk - and don't
+forget to put your files under version control first!
+
+-- Example
+
+    mkdir some-project
+    cd some-project;
+    mkdir -p lib/Some/
+    vim lib/Some/Project.pm
+    mypp update
+
+--- Future plans
+* Add support for .mypp/custom-plugin..?
+* Add auto-generation of modules...?
+* Change name..?
+* Add more auto-generated tests. (Link tests, and more?)
+* Keep it simple. Keep it "clean"
+
+I'm actually quite pleased with mypp now, so development is slow these
+days. Luckily someone poked me irc://irc.perl.org/#batman, so there
+might be some things happening again soon.
