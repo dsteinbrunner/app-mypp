@@ -6,7 +6,7 @@ Some::Project - can do stuff
 
 =head1 VERSION
 
-0.00
+0.01
 
 =head1 DESCRIPTION
 

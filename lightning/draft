@@ -58,13 +58,14 @@ forget to put your files under version control first!
     mkdir some-project
     cd some-project;
     mkdir -p lib/Some/
-    vim lib/Some/Project.pm
+    $EDITOR lib/Some/Project.pm
     git init
     git add lib
     git commit -m"some-project started"
     mypp update
     git add Changes README t/
     git commit -m"add mypp files"
+    $EDITOR Changes
     mypp test
     mypp build
     # mypp share
