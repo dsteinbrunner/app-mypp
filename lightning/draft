@@ -59,11 +59,21 @@ forget to put your files under version control first!
     cd some-project;
     mkdir -p lib/Some/
     vim lib/Some/Project.pm
+    git init
+    git add lib
+    git commit -m"some-project started"
     mypp update
+    git add Changes README t/
+    git commit -m"add mypp files"
+    mypp test
+    mypp build
+    # mypp share
+    mypp clean
 
 --- Future plans
 * Add support for .mypp/custom-plugin..?
 * Add auto-generation of modules...?
+* Create .gitignore file..?
 * Change name..?
 * Add more auto-generated tests. (Link tests, and more?)
 * Keep it simple. Keep it "clean"
