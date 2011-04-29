@@ -140,6 +140,9 @@ our $CHANGES_FILENAME = 'Changes';
 our $PAUSE_FILENAME = $ENV{'HOME'} .'/.pause';
 our $VERSION_RE = qr/\d+ \. [\d_]+/x;
 
+open my $OLDOUT, '>&STDOUT';
+open my $OLDERR, '>&STDERR';
+
 sub _from_config ($&) {
     my($name, $sub) = @_;
 
@@ -286,7 +289,7 @@ _attr changes => sub {
         open my $CHANGES, '>', $CHANGES_FILENAME or die "Write '$CHANGES_FILENAME': $!\n";
         printf $CHANGES "Revision history for %s\n\n0.00\n", $self->name;
         print $CHANGES " " x 7, "* Init repo\n\n";
-        print "Wrote $CHANGES_FILENAME\n" unless $SILENT;
+        $self->_log("Created $CHANGES_FILENAME");
     }
 
     open my $CHANGES, '<', $CHANGES_FILENAME or die "Read '$CHANGES_FILENAME': $!\n";
@@ -467,7 +470,7 @@ sub timestamp_to_changes {
     if($changes =~ s/\n($VERSION_RE)\s*$/{ sprintf "\n%-7s  %s", $1, $date }/em) {
         seek $CHANGES, 0, 0;
         print $CHANGES $changes;
-        print "Add timestamp '$date' to $CHANGES_FILENAME\n" unless $SILENT;
+        $self->_log("Add timestamp '$date' to $CHANGES_FILENAME");
         return 1;
     }
 
@@ -499,7 +502,7 @@ sub update_version_info {
         print $MODULE $top_module_text;
     }
 
-    print "Update version in '$top_module' to $version\n" unless $SILENT;
+    $self->_log("Update version in '$top_module' to $version");
 
     return 1;
 }
@@ -513,7 +516,7 @@ module.
 
 sub generate_readme {
     my $self = shift;
-    return $self->_vsystem(
+    return $self->_system(
         sprintf '%s %s > %s', 'perldoc -tT', $self->top_module, 'README'
     ) ? 0 : 1;
 }
@@ -528,7 +531,7 @@ sub clean {
     my $self = shift;
     my $name = $self->name;
 
-    $self->_vsystem('make reset');
+    $self->_system('make reset');
 
     return 1;
 }
@@ -579,7 +582,7 @@ sub makefile {
     print $MAKEFILE "auto_install;\n";
     print $MAKEFILE "WriteAll;\n";
 
-    print "Wrote $MAKEFILE_FILENAME\n" unless $SILENT;
+    $self->_log("Created $MAKEFILE_FILENAME");
 
     return 1;
 }
@@ -729,8 +732,8 @@ make script, and then execute C<make $what>.
 sub make {
     my $self = shift;
     $self->makefile unless(-e $MAKEFILE_FILENAME);
-    $self->_vsystem(perl => $MAKEFILE_FILENAME) unless(-e 'Makefile');
-    $self->_vsystem(make => @_);
+    $self->_system(perl => $MAKEFILE_FILENAME) unless(-e 'Makefile');
+    $self->_system(make => @_);
 }
 
 =head2 tag_and_commit
@@ -741,8 +744,8 @@ Commits with the text from C<Changes> and create a tag.
 
 sub tag_and_commit {
     my $self = shift;
-    $self->_vsystem(git => commit => -a => -m => $self->changes->{'text'});
-    $self->_vsystem(git => tag => $self->changes->{'version'});
+    $self->_system(git => commit => -a => -m => $self->changes->{'text'});
+    $self->_system(git => tag => $self->changes->{'version'});
     return 1;
 }
 
@@ -759,8 +762,8 @@ sub share_via_git {
 
     chomp $branch;
 
-    $self->_vsystem(git => push => origin => $branch);
-    $self->_vsystem(git => push => '--tags' => 'origin');
+    $self->_system(git => push => origin => $branch);
+    $self->_system(git => push => '--tags' => 'origin');
 
     return 1;
 }
@@ -847,7 +850,7 @@ sub _make_test {
     print $TEST "eval '$code' or plan skip_all => '$module required';\n";
     print $TEST $pod;
 
-    print "Wrote $file\n" unless $SILENT;
+    $self->_log("Created $file");
     warn "$code failed!" unless eval $code;
 
     return 1;
@@ -876,10 +879,14 @@ sub help {
     return 2;
 }
 
-sub _vsystem {
-    shift; # shift off class/object
-    print "\$ @_\n" unless $SILENT;
-    return $SILENT ? system "@_ 1>/dev/null 2>/dev/null" : system @_;
+sub _system {
+    shift->_log("\$ @_");
+    open STDERR, '>', '/dev/null' if($SILENT);
+    open STDOUT, '>', '/dev/null' if($SILENT);
+    system @_;
+    open STDERR, '>&', $OLDERR if($SILENT);
+    open STDOUT, '>&', $OLDOUT if($SILENT);
+    return $?;
 }
 
 sub _filename_to_module {
@@ -902,6 +909,11 @@ sub _version_from_module {
     }
 
     return;
+}
+
+sub _log {
+    return if $SILENT;
+    print $_[1], "\n";
 }
 
 =head1 SEE ALSO
