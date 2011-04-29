@@ -160,6 +160,7 @@ system rm => -r => qw(
     Makefile.PL
     README
     t/00-load.t
-    t/00-pod-coverage.t
     t/00-pod.t
+    t/00-pod-coverage.t
+    t/00-pod-links.t
 );

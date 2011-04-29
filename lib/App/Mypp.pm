@@ -286,7 +286,7 @@ _attr changes => sub {
         open my $CHANGES, '>', $CHANGES_FILENAME or die "Write '$CHANGES_FILENAME': $!\n";
         printf $CHANGES "Revision history for %s\n\n0.00\n", $self->name;
         print $CHANGES " " x 7, "* Init repo\n\n";
-        print "Wrote $CHANGES_FILENAME\n";
+        print "Wrote $CHANGES_FILENAME\n" unless $SILENT;
     }
 
     open my $CHANGES, '<', $CHANGES_FILENAME or die "Read '$CHANGES_FILENAME': $!\n";
@@ -531,19 +531,8 @@ Removes all files which should not be part of your repo.
 sub clean {
     my $self = shift;
     my $name = $self->name;
-    $self->_vsystem('make clean 2>/dev/null');
-    $self->_vsystem(sprintf 'rm -r %s 2>/dev/null', join(' ',
-        "$name*",
-        qw(
-            blib/
-            inc/
-            Makefile
-            Makefile.old
-            MANIFEST*
-            META.yml
-            MYMETA.yml
-        ),
-    ));
+
+    $self->_vsystem('make reset');
 
     return 1;
 }
@@ -611,7 +600,7 @@ sub requires {
     my $prefix = $self->top_module_name;
     my %requires;
 
-    local @INC = ('lib', @INC);
+    local @INC = ('lib', grep { $_ ne 'lib' } @INC);
 
     finddepth({
         no_chdir => 1,
@@ -824,29 +813,12 @@ sub t_pod {
     my $coverage = -e 't/99-pod-coverage.t' ? 't/99-pod-coverage.t' : 't/00-pod-coverage.t';
     my $pod = -e 't/99-pod.t' ? 't/99-pod.t' : 't/00-pod.t';
 
-    mkdir 't';
-
-    unless(-e $coverage and !$force) {
-        open my $POD_COVERAGE, '>', $coverage or die "Write '$coverage': $!\n";
-        print $POD_COVERAGE $self->_t_header;
-        print $POD_COVERAGE <<'TEST';
-eval 'use Test::Pod::Coverage; 1' or plan skip_all => 'Test::Pod::Coverage required';
-all_pod_coverage_ok({ also_private => [ qr/^[A-Z_]+$/ ] });
-TEST
-        print "Wrote $coverage\n" unless $SILENT;
+    if(!-e $coverage or $force) {
+        $self->_make_test($coverage, 'Test::Pod::Coverage', 'all_pod_coverage_ok({ also_private => [ qr/^[A-Z_]+$/ ] });');
     }
-
-    unless(-e $pod and !$force) {
-        open my $POD, '>', $pod or die "Write '$pod': $!\n";
-        print $POD $self->_t_header;
-        print $POD <<'TEST';
-eval 'use Test::Pod; 1' or plan skip_all => 'Test::Pod required';
-all_pod_files_ok();
-TEST
-        print "Wrote $pod\n" unless $SILENT;
+    if(!-e $pod or $force) {
+        $self->_make_test($pod, 'Test::Pod', 'all_pod_files_ok();');
     }
-
-    return 1;
 }
 
 =head2 t_load
@@ -857,39 +829,32 @@ Creates C<t/00-load.t>.
 
 sub t_load {
     my $self = shift;
-    my @modules;
+    my $force = shift || 0;
+    my $load = 't/00-load.t';
 
-    finddepth(sub {
-        return unless($File::Find::name =~ /\.pm$/);
-        $File::Find::name =~ s,.pm$,,;
-        $File::Find::name =~ s,lib/?,,;
-        $File::Find::name =~ s,/,::,g;
-        push @modules, $File::Find::name;
-    }, 'lib');
-
-    mkdir 't';
-    open my $USE_OK, '>', 't/00-load.t' or die "Write 't/00-load.t': $!\n";
-
-    print $USE_OK $self->_t_header;
-    printf $USE_OK "plan tests => %i;\n", int @modules;
-
-    for my $module (sort { $a cmp $b } @modules) {
-        printf $USE_OK "use_ok('%s');\n", $module;
+    if(!-e $load or $force) {
+        $self->_make_test($load, 'Test::Compile', 'all_pm_files_ok();');
     }
-
-    print "Wrote t/00-load.t\n" unless $SILENT;
 
     return 1;
 }
 
-sub _t_header {
-    my $self = shift;
+sub _make_test {
+    my($self, $file, $module, $pod) = @_;
+    my $code = "use $module;1";
     my @lib = ('lib', @{ $self->perl5lib });
 
-    return <<"HEADER";
-use lib qw(@lib);
-use Test::More;
-HEADER
+    mkdir 't' unless(-d 't');
+    open my $TEST, '>', $file or die "Write '$file': $!\n";
+    print $TEST "use lib qw(@lib);\n";
+    print $TEST "use Test::More;\n";
+    print $TEST "eval '$code' or plan skip_all => '$module required';\n";
+    print $TEST $pod;
+
+    print "Wrote $file\n" unless $SILENT;
+    warn "$code failed!" unless eval $code;
+
+    return 1;
 }
 
 =head2 help
