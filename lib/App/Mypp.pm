@@ -6,7 +6,7 @@ App::Mypp - Maintain Your Perl Project
 
 =head1 VERSION
 
-0.10
+0.11
 
 =head1 DESCRIPTION
 
@@ -133,8 +133,8 @@ use Cwd;
 use File::Basename;
 use File::Find;
 
-our $VERSION = '0.10';
-our $SILENT = $ENV{'SILENT'} || 0;
+our $VERSION = eval '0.10';
+our $SILENT = $ENV{'MYPP_SILENT'} || $ENV{'SILENT'} || 0;
 our $MAKEFILE_FILENAME = 'Makefile.PL';
 our $CHANGES_FILENAME = 'Changes';
 our $PAUSE_FILENAME = $ENV{'HOME'} .'/.pause';
@@ -404,10 +404,6 @@ _attr perl5lib => sub {
     }
     elsif(ref $inc ne 'ARRAY') {
         $inc = [ split /:/, $inc ];
-    }
-
-    if($ENV{'PERL5LIB'}) {
-        warn 'perl5lib attribute is not set using PERL5LIB environment variable'
     }
 
     return $inc;

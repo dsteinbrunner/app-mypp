@@ -162,5 +162,4 @@ system rm => -r => qw(
     t/00-load.t
     t/00-pod.t
     t/00-pod-coverage.t
-    t/00-pod-links.t
 );
