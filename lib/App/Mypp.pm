@@ -6,7 +6,7 @@ App::Mypp - Maintain Your Perl Project
 
 =head1 VERSION
 
-0.11
+0.10
 
 =head1 DESCRIPTION
 
@@ -516,9 +516,7 @@ module.
 
 sub generate_readme {
     my $self = shift;
-    return $self->_system(
-        sprintf '%s %s > %s', 'perldoc -tT', $self->top_module, 'README'
-    ) ? 0 : 1;
+    return $self->_system(sprintf '%s %s > %s', 'perldoc -tT', $self->top_module, 'README');
 }
 
 =head2 clean
@@ -528,12 +526,7 @@ Removes all files which should not be part of your repo.
 =cut
 
 sub clean {
-    my $self = shift;
-    my $name = $self->name;
-
-    $self->_system('make reset');
-
-    return 1;
+    return $_[0]->make('reset');
 }
 
 =head2 makefile
@@ -717,7 +710,7 @@ sub manifest {
                            ^MANIFEST.*
                        ), $self->name;
 
-    $self->make('manifest') and die "Execute 'make manifest' failed\n";
+    $self->make('manifest');
 
     return 1;
 }
@@ -734,6 +727,7 @@ sub make {
     $self->makefile unless(-e $MAKEFILE_FILENAME);
     $self->_system(perl => $MAKEFILE_FILENAME) unless(-e 'Makefile');
     $self->_system(make => @_);
+    return 1;
 }
 
 =head2 tag_and_commit
@@ -744,8 +738,16 @@ Commits with the text from C<Changes> and create a tag.
 
 sub tag_and_commit {
     my $self = shift;
+
     $self->_system(git => commit => -a => -m => $self->changes->{'text'});
-    $self->_system(git => tag => $self->changes->{'version'});
+
+    eval {
+        $self->_system(git => tag => $self->changes->{'version'});
+    } or do {
+        $self->_system(git => reset => 'HEAD^');
+        die 'Failed to create git tag ' .$self->changes->{'version'};
+    };
+
     return 1;
 }
 
@@ -883,10 +885,10 @@ sub _system {
     shift->_log("\$ @_");
     open STDERR, '>', '/dev/null' if($SILENT);
     open STDOUT, '>', '/dev/null' if($SILENT);
-    system @_;
+    system @_ and die "system(@_) == $?";
     open STDERR, '>&', $OLDERR if($SILENT);
     open STDOUT, '>&', $OLDOUT if($SILENT);
-    return $?;
+    return 1;
 }
 
 sub _filename_to_module {
