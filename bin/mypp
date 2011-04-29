@@ -16,7 +16,6 @@ $method =~ s/-/_/g;
 
 if($action eq 'update') {
     $app->clean;
-    $app->update_version_info;
     $app->t_load;
     $app->t_pod;
     $app->generate_readme;
