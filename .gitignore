@@ -1,7 +1,3 @@
-/META.yml
-/blib/
-/inc/
-/pm_to_blib
-/Makefile
-/Makefile.old
 *swp
+/local
+/_site
