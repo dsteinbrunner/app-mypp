@@ -18,13 +18,13 @@ chdir 't/my-test-project/' or die $!;
 
 {
     is(ref $app->config, 'HASH', 'attr config is a hash ref');
-    is($app->config->{'just_to_make_test_work'}, 42, 'attr config is read');
+    is($app->config->{just_to_make_test_work}, 42, 'attr config is read');
     is($app->name, 'My-Test-Project', 'attr name = My-Test-Project');
     is($app->top_module, 'lib/My/Test/Project.pm', 'attr top_module = lib/My/Test/Project.pm');
     is($app->top_module_name, 'My::Test::Project', 'attr top_module_name = My::Test::Project');
     is(ref $app->changes, 'HASH', 'attr changes is a hash ref');
-    like($app->changes->{'text'}, qr{^42\.01.*Init repo}s, 'changes->text is set');
-    is($app->changes->{'version'}, '42.01', 'changes->version is set');
+    like($app->changes->{text}, qr{^42\.01.*Init repo}s, 'changes->text is set');
+    is($app->changes->{version}, '42.01', 'changes->version is set');
     is($app->dist_file, 'My-Test-Project-42.01.tar.gz', 'dist_file is set');
 
     is($app->_got_parent_module('App::Mypp', { 'App' => $App::Mypp::VERSION }), 1, 'App::Mypp got parent module');
