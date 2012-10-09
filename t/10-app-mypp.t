@@ -4,12 +4,11 @@ use lib q(lib);
 use Test::More;
 use App::Mypp;
 
-$ENV{'PERL5LIB'} = Cwd::getcwd .'/lib';
-
+$ENV{MYPP_TEST_WAS_RUN} = 0;
 -d '.git' or plan skip_all => 'cannot run test without .git repo';
 
-plan tests => 25;
-
+$ENV{PERL5LIB} = Cwd::getcwd .'/lib';
+$ENV{MYPP_TEST_WAS_RUN} = 1;
 $App::Mypp::SILENT = 1;
 $App::Mypp::PAUSE_FILENAME = 'pause.info';
 my $app = bless {}, 'App::Mypp';
@@ -82,20 +81,24 @@ chdir 't/my-test-project/' or die $!;
     ok(-e 'README', 'README created');
 }
 
+done_testing;
+
 END {
-    system git => tag => -d => '42.01';
-    system git => checkout => 'Changes';
-    system git => checkout => 'lib/My/Test/Project.pm';
-    unlink 'META.yml';
-    unlink 'MYMETA.json';
-    unlink 'MYMETA.yml';
-    unlink 'Makefile';
-    unlink 'Makefile.PL';
-    unlink 'Makefile.old';
-    unlink 'Changes.old';
-    unlink 'MANIFEST';
-    unlink 'MANIFEST.skip';
-    unlink 'README';
-    unlink 'My-Test-Project-42.01.tar.gz';
-    system rm => -rf => 'inc';
+    if($ENV{MYPP_TEST_WAS_RUN}) {
+        system git => tag => -d => '42.01';
+        system git => checkout => 'Changes';
+        system git => checkout => 'lib/My/Test/Project.pm';
+        unlink 'META.yml';
+        unlink 'MYMETA.json';
+        unlink 'MYMETA.yml';
+        unlink 'Makefile';
+        unlink 'Makefile.PL';
+        unlink 'Makefile.old';
+        unlink 'Changes.old';
+        unlink 'MANIFEST';
+        unlink 'MANIFEST.skip';
+        unlink 'README';
+        unlink 'My-Test-Project-42.01.tar.gz';
+        system rm => -rf => 'inc';
+    }
 }
