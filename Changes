@@ -1,5 +1,9 @@
 Revision history for App-Mypp
 
+0.14     Tue Nov  6 11:12:34 2012
+       * Replace "reset" with "clean" to be compatible with ExtUtils::MakeMaker
+       * Rename MANIFEST.skip to MANIFEST.SKIP
+
 0.1301   Tue Oct  9 20:22:59 2012
        * Fix RT79493: Cannot run END{} block unless .git/ was found
 
