@@ -44,7 +44,7 @@ Revision history for App-Mypp
        * Deprecated setting perl5lib attribute from the PERL5LIB
          environment variable.
 
-0.07_01
+0.07_01  Tue Nov  6 11:14:12 2012
        * Fix typo "Wrote t/t/99-pod-coverage.t"
 
 0.07     Sun May  9 00:26:14 CEST 2010
