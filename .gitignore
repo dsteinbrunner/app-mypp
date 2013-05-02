@@ -6,6 +6,9 @@
 /Makefile
 /Makefile.old
 /MANIFEST*
+/Changes.old
+/t/my-test-project/MANIFEST.SKIP
+/t/my-test-project/MANIFEST.bak
 *swp
 App-Mypp-*.tar.gz
 /local

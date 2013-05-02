@@ -272,12 +272,8 @@ _attr changes => sub {
 
     while(<$CHANGES>) {
         if($text) {
-            if(/^$/) {
-                last;
-            }
-            else {
-                $text .= $_;
-            }
+            last if /^$/;
+            $text .= $_;
         }
         elsif(/^($VERSION_RE)/) {
             $version = $1;
@@ -398,7 +394,7 @@ sub _build {
         $self->_timestamp_to_changes;
 
         push @rollback, sub { $self->_git(reset => 'HEAD^') };
-        $self->_git(commit => -a => -m => $self->changes->{text});
+        $self->_git(commit => -a => -m => $self->_changes_to_commit_message);
 
         push @rollback, sub { $self->_git(tag => -d => $self->changes->{version}) };
         $self->_git(tag => $self->changes->{version});
@@ -413,6 +409,16 @@ sub _build {
     };
 }
 
+sub _changes_to_commit_message {
+    my $self = shift;
+    my $text = $self->changes->{text};
+    my $version = $self->changes->{version};
+
+    # need to add extra line
+    $text =~ s/.*\n/Released version $version\n\n/;
+    $text;
+}
+
 sub _timestamp_to_changes {
     my $self = shift;
     my $date = localtime;
@@ -425,6 +431,7 @@ sub _timestamp_to_changes {
 
     if($changes =~ s/\n($VERSION_RE)\s*$/{ sprintf "\n%-7s  %s", $1, $date }/em) {
         print $NEW $changes;
+        delete $self->{changes}; # need to re-read changes
         $self->_log("Add timestamp '$date' to Changes");
         return 1;
     }
@@ -546,11 +553,11 @@ sub _generate_file_from_template {
 
 sub _system {
     shift->_log("\$ @_");
-    open STDERR, '>', '/dev/null' if($SILENT);
-    open STDOUT, '>', '/dev/null' if($SILENT);
+    open STDERR, '>', '/dev/null' if $SILENT;
+    open STDOUT, '>', '/dev/null' if $SILENT;
     system @_; $_ = $?;
-    open STDERR, '>&', $OLDERR if($SILENT);
-    open STDOUT, '>&', $OLDOUT if($SILENT);
+    open STDERR, '>&', $OLDERR if $SILENT;
+    open STDOUT, '>&', $OLDOUT if $SILENT;
     die "system(@_) == $_" if $_;
     return 1;
 }
@@ -665,4 +672,3 @@ repository q(${repository});
 # install_script glob('bin/*');
 auto_install;
 WriteAll;
-ll;
