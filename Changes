@@ -1,6 +1,7 @@
 Revision history for App-Mypp
 
 0.17
+       * Add mypp clean will also remove Makefile.old and META*
        * Replacing 00-xxx.t tests with 00-basic.t
        * Replacing Module::Install with ExtUtils::MakeMaker
        * Fix extra 1; at the end of top module file
