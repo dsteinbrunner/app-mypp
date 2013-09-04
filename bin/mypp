@@ -14,17 +14,17 @@ version 'App::Mypp';
 extends 'App::Mypp';
 
 sub die_on_old_test_structure {
-  die <<'  NOTICE' unless $ENV{MYPP_KEEP_OLD_STRUCTURE}
+  die <<'NOTICE' unless $ENV{MYPP_KEEP_OLD_STRUCTURE}
 
-  You have an old t/ structure with 00-load.t, 00-pod.t and 00-pod-coverage.t
+You have an old t/ structure with 00-load.t, 00-pod.t and 00-pod-coverage.t
 
-  You should probably convert to t/00-basic.t. Do so by deleting the old
-  00-xxx.t tests and run "mypp" again.
+You should probably convert to t/00-basic.t. Do so by deleting the old
+00-xxx.t tests and run "mypp" again.
 
-  You can also disable this message by setting the MYPP_KEEP_OLD_STRUCTURE
-  environment variable to true.
+You can also disable this message by setting the MYPP_KEEP_OLD_STRUCTURE
+environment variable to true.
 
-  NOTICE
+NOTICE
 }
 
 app {
