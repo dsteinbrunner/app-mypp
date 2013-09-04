@@ -66,6 +66,6 @@ app {
     else {
         $self->_script->print_help;
     }
- 
+
     return 0;
 };

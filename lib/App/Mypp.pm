@@ -357,7 +357,7 @@ Set by C<--force>
 
 =cut
 
-sub force { 0 }
+sub force { shift->{force} || 0 }
 
 my %TEMPLATES;
 sub _templates {
@@ -393,6 +393,9 @@ sub _build {
         push @rollback, sub { rename 'Changes.old', 'Changes' };
         $self->_timestamp_to_changes;
 
+        -e and $self->_git(add => $_) for qw/ Changes Makefile.PL README mypp.yml t /;
+        $self->_git(add => $self->top_module);
+
         push @rollback, sub { $self->_git(reset => 'HEAD^') };
         $self->_git(commit => -a => -m => $self->_changes_to_commit_message);
 
@@ -404,7 +407,8 @@ sub _build {
         1;
     } or do {
         $e = $@ || 'Not sure what went wrong';
-        $_->() for reverse @rollback;
+        eval { $_->() for reverse @rollback };
+        warn "ROLLBACK FAILED: $@" if $@;
         die $e;
     };
 }
@@ -440,64 +444,74 @@ sub _timestamp_to_changes {
 }
 
 sub _update_version_info {
-    my $self = shift;
-    my $top_module = $self->top_module;
-    my $version = $self->changes->{version};
-    my $top_module_text;
+  my $self = shift;
+  my $top_module = $self->top_module;
+  my $version = $self->changes->{version};
+  my $top_module_text;
 
-    open my $MODULE, '+<', $top_module or die "Read/write $top_module: $!\n";
-    { local $/; $top_module_text = <$MODULE> }
-    seek $MODULE, 0, 0;
-
+  {
+    open my $MODULE, '<', $top_module or die "Read $top_module: $!\n";
+    local $/;
+    $top_module_text = <$MODULE>;
     $top_module_text =~ s/=head1 VERSION.*?\n=/=head1 VERSION\n\n$version\n\n=/s;
     $top_module_text =~ s/^((?:our)?\s*\$VERSION)\s*=.*$/$1 = '$version';/m;
+  }
 
+  {
+    open my $MODULE, '>', $top_module or die "Write $top_module: $!\n";
     print $MODULE $top_module_text;
-    $self->_log("Update version in $top_module to $version");
+  }
 
-    return 1;
+  $self->_log("Update version in $top_module to $version");
+
+  return 1;
 }
 
-sub _requires {
-    my $self = shift;
-    my(%requires, %test_requires, @requires, $corelist);
-    my $wanted = sub {
-                    return if(!-f $_);
-                    return if(/\.swp/);
-                    open my $REQ, '-|', "$^X -MApp::Mypp::ShowINC '$_' 2>/dev/null";
-                    while(<$REQ>) {
-                        my($m, $v) = split /=/;
-                        chomp $v;
-                        $_[0]->{$m} = $v unless($requires{$m});
-                    }
-                };
+sub _project_requires {
+  my($self, $what) = @_;
+  my(%run, %build, @run, @build, $corelist);
+  my $wanted;
 
-    # required to skip core modules
-    eval "use Module::CoreList; 1" and $corelist = 1;
+  if($self->{"requires_$what"}) {
+    return $self->{"requires_$what"};
+  }
 
-    finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%requires) } }, 'bin') if(-d 'bin');
-    finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%requires) } }, 'lib');
-    finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%test_requires) } }, 't');
-
-    for my $m (sort keys %requires) {
-        my $v = $requires{$m};
-        next if($self->_got_parent_module($m, \%requires));
-        next if($corelist and Module::CoreList->first_release($m));
-        push @requires, $v ? "requires q($m) => $v;" : "# requires q($m) => ??;";
+  $wanted = sub {
+    return if !-f $_;
+    return if /\.swp/ ;
+    open my $REQ, '-|', "$^X -MApp::Mypp::ShowINC -c '$_' 2>/dev/null";
+    while(<$REQ>) {
+      chomp;
+      my($m, $v) = split /=/;
+      $_[0]->{$m} = $v unless $run{$m};
     }
+  };
 
-    if(%test_requires) {
-        push @requires, '';
-    }
+  # required to skip core modules
+  eval "use Module::CoreList; 1" and $corelist = 1;
 
-    for my $m (sort keys %test_requires) {
-        my $v = $test_requires{$m};
-        next if($self->_got_parent_module($m, \%requires));
-        next if($corelist and Module::CoreList->first_release($m));
-        push @requires, $v ? "test_requires q($m) => $v;" : "# test_requires q($m) => ??;";
-    }
+  finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%run) } }, 'bin') if -d 'bin';
+  finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%run) } }, 'lib');
+  finddepth({ no_chdir => 1, wanted => sub { $wanted->(\%build) } }, 't');
 
-    return join "\n", @requires;
+  for my $m (sort keys %run) {
+    my $v = $run{$m} || '0';
+    next if $self->_got_parent_module($m, \%run);
+    next if $corelist and Module::CoreList->first_release($m);
+    push @run, "    '$m' => '$v',\n";
+  }
+
+  for my $m (sort keys %build) {
+    my $v = $build{$m} || '0';
+    next if $self->_got_parent_module($m, \%run);
+    next if $corelist and Module::CoreList->first_release($m);
+    push @build, "    '$m' => '$v',\n";
+  }
+
+  local $" = '';
+  $self->{"requires_run"} = "@run";
+  $self->{"requires_build"} = "@build";
+  $self->{"requires_$what"};
 }
 
 sub _got_parent_module {
@@ -536,7 +550,7 @@ sub _share_via_extension {
 
 sub _generate_file_from_template {
     my($self, $file) = @_;
-    my $content;
+    my($content, $eval);
 
     if(-e $file and !$self->force) {
         $self->_log("$file already exists. (Skipping)");
@@ -544,14 +558,20 @@ sub _generate_file_from_template {
     }
 
     $content = $self->_templates->{$file} or die "No such template defined: $file";
-    $content =~ s!\$\{(\w+)\}!{ $self->$1 }!ge;
+    $content =~ s!<%= ([^%]+) %>!{ local $_ = eval($1); warn "$1 => $@" if $@; chomp; $_ }!ge;
     mkdir dirname $file;
-    open my $FH, '>', $file or die "Write $file: $!";
-    print $FH $content;
+    $self->_write($file, $content);
     $self->_log("$file was generated");
 }
 
+sub _write {
+  my($self, $file, @data) = @_;
+  open my $FH, '>', $file or die "Write $file: $!";
+  print $FH @data;
+}
+
 sub _system {
+    local $_;
     shift->_log("\$ @_");
     open STDERR, '>', '/dev/null' if $SILENT;
     open STDOUT, '>', '/dev/null' if $SILENT;
@@ -651,7 +671,7 @@ for my $file (@files) {
 ^blib/
 ^Makefile$
 ^MANIFEST.*
-^${name}
+^<%= $self->name %>
 %% .gitignore ===============================================================
 /META.yml
 /MYMETA.*
@@ -665,27 +685,39 @@ for my $file (@files) {
 *.old
 *.swp
 ~$
-/${name}*tar.gz
+/<%= $self->name %>*tar.gz
 %% Changes ==================================================================
-Revision history for ${name}
+Revision history for <%= $self->name %>
 
 0.01
        * Started project
        * Add cool feature
 %% Makefile.PL ==============================================================
-use inc::Module::Install;
-
-name q(${name});
-all_from q(${top_module});
-
-${_requires}
-
-bugtracker q(http://rt.cpan.org/NoAuth/Bugs.html?Dist=${name});
-homepage q(https://metacpan.org/release/${name});
-repository q(${repository});
-
-# install_script glob('bin/*');
-auto_install;
-WriteAll;
-ll;
-
+use ExtUtils::MakeMaker;
+WriteMakefile(
+  NAME => '<%= $self->name %>',
+  ABSTRACT_FROM => '<%= $self->top_module %>',
+  VERSION_FROM => '<%= $self->top_module %>',
+  AUTHOR => '<%= qx{git config --get user.name} %> <<%= qx{git config --get user.email} %>>',
+  LICENSE => 'perl',
+  PREREQ_PM => {
+<%= $self->_project_requires('run') %>
+  },
+  BUILD_REQUIRES => {
+<%= $self->_project_requires('build') %>
+  },
+  META_MERGE => {
+    resources => {
+      license => 'http://dev.perl.org/licenses/',
+      homepage => 'https://metacpan.org/release/<%= $self->name %>',
+      bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=<%= $self->name %>',
+      repository => '<%= $self->repository %>',
+     #MailingList => 'some-mailing@list.org',
+    },
+  },
+  test => {
+    TESTS => 't/*.t',
+  },
+  #MIN_PERL_VERSION => 5.10,
+  #EXE_FILES => ['bin/my-app'],
+);
