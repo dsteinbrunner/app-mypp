@@ -33,7 +33,7 @@ Actions are also available with out "--", such as "init", "update", "test",
     mypp [action];
     mypp --action;
     mypp --force update Makefile.PL
-    mypp update t/00-load.t
+    mypp update t/00-basic.t
 
 =head1 SAMPLE CONFIG FILE
 
@@ -612,21 +612,36 @@ Jan Henning Thorsen, C<jhthorsen at cpan.org>
 
 1;
 __DATA__
-%% t/00-load.t ==============================================================
-use lib 'lib';
+%% t/00-basic.t =============================================================
 use Test::More;
-eval 'use Test::Compile; 1' or plan skip_all => 'Test::Compile required';
-all_pm_files_ok();
-%% t/00-pod.t ===============================================================
-use lib 'lib';
-use Test::More;
-eval 'use Test::Pod; 1' or plan skip_all => 'Test::Pod required';
-all_pod_files_ok();
-%% t/00-pod-coverage.t ======================================================
-use lib 'lib';
-use Test::More;
-eval 'use Test::Pod::Coverage; 1' or plan skip_all => 'Test::Pod::Coverage required';
-all_pod_coverage_ok({ also_private => [ qr/^[A-Z_]+$/ ] });
+use File::Find;
+
+if(($ENV{HARNESS_PERL_SWITCHES} || '') =~ /Devel::Cover/) {
+  plan skip_all => 'HARNESS_PERL_SWITCHES =~ /Devel::Cover/';
+}
+if(!eval 'use Test::Pod; 1') {
+  *Test::Pod::pod_file_ok = sub { SKIP: { skip "pod_file_ok(@_) (Test::Pod is required)", 1 } };
+}
+if(!eval 'use Test::Pod::Coverage; 1') {
+  *Test::Pod::Coverage::pod_coverage_ok = sub { SKIP: { skip "pod_coverage_ok(@_) (Test::Pod::Coverage is required)", 1 } };
+}
+
+find(
+  {
+    wanted => sub { /\.pm$/ and push @files, $File::Find::name },
+    no_chdir => 1
+  },
+  -e 'blib' ? 'blib' : 'lib',
+);
+
+plan tests => @files * 3;
+
+for my $file (@files) {
+  my $module = $file; $module =~ s,\.pm$,,; $module =~ s,.*/?lib/,,; $module =~ s,/,::,g;
+  ok eval "use $module; 1", "use $module" or diag $@;
+  Test::Pod::pod_file_ok($file);
+  Test::Pod::Coverage::pod_coverage_ok($module);
+}
 %% MANIFEST.SKIP ============================================================
 ^mypp.yml
 .git
@@ -673,3 +688,4 @@ repository q(${repository});
 auto_install;
 WriteAll;
 ll;
+

@@ -44,9 +44,7 @@ my $app = bless {}, 'App::Mypp';
             'Changes',
             'MANIFEST.SKIP',
             'Makefile.PL',
-            't/00-load.t',
-            't/00-pod-coverage.t',
-            't/00-pod.t',
+            't/basic.t',
         ],
         '_templates defined'
     );

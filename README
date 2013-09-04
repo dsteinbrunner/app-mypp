@@ -27,7 +27,7 @@ SYNOPSIS
         mypp [action];
         mypp --action;
         mypp --force update Makefile.PL
-        mypp update t/00-load.t
+        mypp update t/00-basic.t
 
 SAMPLE CONFIG FILE
         ---
